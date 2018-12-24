@@ -7,6 +7,20 @@ var helmet = require('helmet');
 var session = require('express-session');
 var passport = require('passport');
 
+//モデルの読み込み
+var User = require('./models/user');
+var Word = require('./models/word');
+var Combination = require('./models/combination');
+var Favorite = require('./models/favorite');
+User.sync().then(() => {
+  Combination.sync();
+  Word.belongsTo(User, { foreignKey: 'createdBy' });
+  Word.sync();
+  Favorite.belongsTo(User, { foreignKey: 'userId' });
+  Favorite.sync();
+});
+
+
 var GitHubStrategy = require('passport-github2');
 var GITHUB_CLIENT_ID = '2c3921de2800c6d45712';
 var GITHUB_CLIENT_SECRET = 'c967b38a835e33a1ddae8320310a9aea6b5406fd';
