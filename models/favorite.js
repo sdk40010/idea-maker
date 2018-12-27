@@ -13,6 +13,10 @@ const Favorite = loader.database.define('favorites', {
     primarykey: true,
     allowNull: false
   },
+  favorite: {
+    type: Sequelize.INTEGER,
+    allowNull: false
+  },
   combination: {
     type: Sequelize.ARRAY(Sequelize.STRING(20)),
     allowNull: false

@@ -54,6 +54,7 @@ var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var wordsRouter = require('./routes/word');
+var favoriteRouter = require('./routes/favorite');
 
 var app = express();
 app.use(helmet());
@@ -76,6 +77,7 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/words', wordsRouter);
+app.use('/users', favoriteRouter);
 
 app.get('/auth/github',
   passport.authenticate('github', { scope: ['user:email'] }),
