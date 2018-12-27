@@ -9,8 +9,12 @@ const Combination = loader.database.define('combinations', {
     autoIncrement: true,
     allowNull: false
   },
-  conbination: {
+  combination: {
     type: Sequelize.ARRAY(Sequelize.STRING(20)),
+    allowNull: false
+  },
+  descriptions: {
+    type: Sequelize.ARRAY(Sequelize.STRING),
     allowNull: false
   },
   firstWordId: {

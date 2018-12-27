@@ -2,3 +2,37 @@ extends layout
 
 block content
   p.my-3 Welcome to オリジナルアプリ（仮）
+  if user
+    div
+      a(href="/words/new") 投稿を作成する
+    - var hasCombination = combinations.length > 0
+    if hasCombination
+      h3 組み合わせ一覧
+      each combination in combinations
+        div.row
+          div.col-sm-2
+            button お気に入り
+          div.col-sm-5
+            div.card
+              div.card-body
+                h5.card-title #{combination.combination[0]}
+                hr
+                - var hasDescription = (combination.descriptions[0] !== "")
+                if hasDescription
+                  p.card-text #{combination.descriptions[0]}
+                else
+                  p.card-text.text-muted No description
+          div.col-sm-5
+            div.card
+              div.card-body
+                h5.card-title #{combination.combination[1]}
+                hr
+                - var hasDescription = (combination.descriptions[1] !== "")
+                if hasDescription
+                  p.card-text #{combination.descriptions[1]}
+                else
+                  p.card-text.text-muted No description
+  
+
+
+

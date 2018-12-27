@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  form(method="post", action="/words")
+    div
+      h5 キーワード
+      input(type="text", name="word")
+    div
+      h5 説明
+      textarea(name="description")
+    button(type="submit") 投稿する
