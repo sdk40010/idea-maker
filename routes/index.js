@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
       //閲覧ユーザーのお気に入り情報（どの組み合わせをお気に入りに追加しているか）を取得する
       return Favorite.findAll({
         where: { userId: req.user.id },
-        order: [['"combinationId"']]
+        order: [['"combinationId"', 'DESC']]
       });
     }).then((favorites) => {
       //お気に入りMap(キー:組み合わせID, 値:お気に入り情報)を作成する
@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
         favoriteMap.set(f.combinationId, f.favorite);
       });
 
-      //お気に入り情報がない組み合わせに、お気に入りではないことを表す「0」を設定する
+      //お気に入り情報がない組み合わせに、お気に入りでないことを表す「0」を設定する
       storedCombinations.forEach((c) => {
         const f = favoriteMap.get(c.combinationId) || 0; //デフォルト値は0を利用
         favoriteMap.set(c.combinationId, f);

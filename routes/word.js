@@ -19,6 +19,7 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
     newWord = word;
     return Word.findAll();
   }).then((words) => {
+    //新しく追加された単語と既存の単語の組み合わせを作成する
     if (words.length >= 2) {
       let combinations = [];
       for (let i = 0; i < words.length - 1; i++) {

@@ -92,26 +92,30 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(os__WEBPACK_IMPORTED_MODULE_1__);
 
 
 
+jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function (i, e) {
+  var favoriteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
+  favoriteButton.click(function () {
+    var userId = favoriteButton.data('user-id');
+    var combinationId = favoriteButton.data('combination-id');
+    var favorite = parseInt(favoriteButton.data('favorite'));
+    var nextFavorite = (favorite + 1) % 2;
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
+      favorite: nextFavorite
+    }, function (data) {
+      console.log(data);
+      favoriteButton.data('favorite', data.favorite);
+      var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
+      favoriteButton.text(favoriteLabels[data.favorite]);
 
-var favoriteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button');
-favoriteButton.click(function () {
-  var userId = favoriteButton.data('user-id');
-  var combinationId = favoriteButton.data('combination-id');
-  var combination = favoriteButton.data('combination');
-  var descriptions = favoriteButton.data('descriptions');
-  console.log("".concat(userId, " ").concat(combinationId, " ").concat(combination, " ").concat(descriptions));
-  console.log(Object.prototype.toString.call(combination));
-  console.log(Object.prototype.toString.call(descriptions));
-  jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
-    combination: combination,
-    descriptions: descriptions
-  }, function (data) {
-    alert('お気に入りに追加しました');
+      if (data.favorite === 0) {
+        alert('お気に入りから削除しました');
+      } else {
+        alert('お気に入りに追加しました');
+      }
+    });
   });
 });
 
@@ -10484,61 +10488,6 @@ if ( !noGlobal ) {
 
 return jQuery;
 } );
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-exports.endianness = function () { return 'LE' };
-
-exports.hostname = function () {
-    if (typeof location !== 'undefined') {
-        return location.hostname
-    }
-    else return '';
-};
-
-exports.loadavg = function () { return [] };
-
-exports.uptime = function () { return 0 };
-
-exports.freemem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.totalmem = function () {
-    return Number.MAX_VALUE;
-};
-
-exports.cpus = function () { return [] };
-
-exports.type = function () { return 'Browser' };
-
-exports.release = function () {
-    if (typeof navigator !== 'undefined') {
-        return navigator.appVersion;
-    }
-    return '';
-};
-
-exports.networkInterfaces
-= exports.getNetworkInterfaces
-= function () { return {} };
-
-exports.arch = function () { return 'javascript' };
-
-exports.platform = function () { return 'browser' };
-
-exports.tmpdir = exports.tmpDir = function () {
-    return '/tmp';
-};
-
-exports.EOL = '\n';
-
-exports.homedir = function () {
-	return '/'
-};
 
 
 /***/ })
