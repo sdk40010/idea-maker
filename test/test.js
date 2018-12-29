@@ -3,10 +3,11 @@ const request = require('supertest');
 const app = require('../app');
 const passportStub = require('passport-stub');
 const assert = require('assert');
-var User = require('../models/user');
-var Word = require('../models/word');
-var Combination = require('../models/combination');
-var Favorite = require('../models/favorite');
+const loader = require('../models/sequelize-loader');
+const User = require('../models/user');
+const Word = require('../models/word');
+const Combination = require('../models/combination');
+const Favorite = require('../models/favorite');
 
 describe('/login', () => {
   before(() => {
@@ -111,6 +112,7 @@ describe('/users/:userId/combinations/:combinationId', () => {
   after(() => {
     passportStub.logout();
     passportStub.uninstall(app);
+    loader.database.close();
   });
 
   it('お気に入りに追加できる', (done) => {
