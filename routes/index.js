@@ -28,9 +28,6 @@ router.get('/', (req, res, next) => {
         const f = favoriteMap.get(c.combinationId) || 0; //デフォルト値は0を利用
         favoriteMap.set(c.combinationId, f);
       });
-
-      console.log(favoriteMap); //あとで消す
-
       res.render('index', {
         user: req.user,
         combinations: storedCombinations,

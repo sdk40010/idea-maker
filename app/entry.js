@@ -12,7 +12,6 @@ $('.favorite-button').each((i, e) => {
     $.post(`/users/${userId}/combinations/${combinationId}`,
       { favorite: nextFavorite },
       (data) => {
-        console.log(data);
         favoriteButton.data('favorite', data.favorite);
         const favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
         favoriteButton.text(favoriteLabels[data.favorite]);

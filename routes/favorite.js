@@ -11,8 +11,6 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
   let favorite = req.body.favorite;
   favorite = favorite ? parseInt(favorite) : 0;
 
-  console.log(`{ ${favorite} }`);
-
   if (favorite === 0) {
     //お気に入りから削除されたら,データベースからお気に入り情報を削除する
     Favorite.findOne({

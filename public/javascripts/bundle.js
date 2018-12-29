@@ -105,7 +105,6 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function 
     jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
       favorite: nextFavorite
     }, function (data) {
-      console.log(data);
       favoriteButton.data('favorite', data.favorite);
       var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
       favoriteButton.text(favoriteLabels[data.favorite]);
