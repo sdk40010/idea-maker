@@ -3,6 +3,10 @@ jobs:
   build:
     docker:
       - image: circleci/node:8.9.4
+      - image: circleci/postgres:9.6.2-alpine-ram
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: idea_maker
 
     working_directory: ~/repo
 
@@ -10,6 +14,14 @@ jobs:
       - checkout
       - run: npm install
       - run: mkdir junit
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: V0.3.0
+      - run:
+          name: Wait for Db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           command: node_modules/.bin/mocha test --reporter mocha-junit-reporter
           environment:
