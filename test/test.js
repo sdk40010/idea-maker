@@ -112,6 +112,7 @@ describe('/users/:userId/combinations/:combinationId', () => {
   after(() => {
     passportStub.logout();
     passportStub.uninstall(app);
+    loader.database.close();
   });
 
   it('お気に入りに追加できる', (done) => {
