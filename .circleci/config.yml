@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:8.9.4
-      - image: circleci/postgres:9.5-alpine
+      - image: circleci/postgres:9.6.2-alpine
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: idea_maker
@@ -22,8 +22,6 @@ jobs:
       - run:
           name: Wait for Db
           command: dockerize -wait tcp://localhost:5432 -timeout 2m
-      - run:
-          command: npm start
       - run:
           command: node_modules/.bin/mocha test --reporter mocha-junit-reporter
           environment:
