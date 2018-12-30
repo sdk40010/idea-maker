@@ -2,7 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
+const Word = require('../models/word');
 const Favorite = require('../models/favorite');
+const moment = require('moment-timezone');
 
 router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req, res, next) => {
   const userId = req.params.userId;
@@ -22,7 +24,7 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
     });
   } else {
     //お気に入りに追加されたら、データベースにお気に入り情報を保存する
-    Favorite.upsert({
+    Favorite.create({
       userId: userId,
       combinationId: combinationId,
       favorite: favorite,
@@ -31,6 +33,23 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
       res.json({ status: 'OK', favorite: favorite });
     });
   }
+});
+
+router.get('/:userId/mywords', authenticationEnsurer, (req, res, next) => {
+  const userId = req.params.userId;
+  Word.findAll({
+    where: { createdBy: userId },
+    order: [['"createdAt"', 'DESC']]
+  }).then((words) => {
+    words.forEach((word) => {
+      word.formattedCreatedAt = moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+      word.formattedUpdatedAt = moment(word.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+    });
+    res.render('mywords', {
+      user: req.user,
+      words: words
+    });
+  });
 });
 
 module.exports = router;

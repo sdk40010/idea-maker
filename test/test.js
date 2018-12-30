@@ -60,14 +60,14 @@ describe('/words', () => {
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
           .post('/words')
-          .send({ word: 'ワード1', description: '説明1' })
-          .expect('Location', /\//)
+          .send({ word: 'テストワード1', description: 'テスト説明1' })
+          .expect('Location', '/')
           .expect(302)
           .end((err, res) => {
             request(app)
               .post('/words')
-              .send({ word: 'ワード2', description: '説明2' })
-              .expect('Location', /\//)
+              .send({ word: 'テストワード2', description: 'テスト説明2' })
+              .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
                 if (err) done(err);
@@ -121,13 +121,13 @@ describe('/users/:userId/combinations/:combinationId', () => {
         request(app)
           .post('/words')
           .send({ word: 'お気に入り追加ワード1', description: 'お気に入り追加説明1' })
-          .expect('Location', /\//)
+          .expect('Location', '/')
           .expect(302)
           .end((err, res) => {
             request(app)
               .post('/words')
               .send({ word: 'お気に入り追加ワード2', description: 'お気に入り追加説明2' })
-              .expect('Location', /\//)
+              .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
                 if (err) done(err);
@@ -181,6 +181,89 @@ describe('/users/:userId/combinations/:combinationId', () => {
     });
   });
 });
+
+describe('/words/:wordId?edit=1', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('単語の説明が更新でき、組み合わせの説明も更新できる', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      //投稿を二つ作成
+      const promiseTwoWords = new Promise((resolve) => {
+        request(app)
+          .post('/words')
+          .send({ word: '説明更新ワード1', description: '更新説明1' })
+          .expect('Location', /\//)
+          .expect(302)
+          .end((err, res) => {
+            request(app)
+              .post('/words')
+              .send({ word: '説明更新ワード2', description: '更新説明2' })
+              .expect('Location', /\//)
+              .expect(302)
+              .end((err, res) => {
+                if (err) done(err);
+                resolve();
+              });
+          });
+      });
+
+      const userId = 0;
+      promiseTwoWords.then(() => {
+        return Word.findOne({
+          where: { createdBy: 0 },
+          order: [['"wordId"', 'DESC']]
+        });
+      }).then((word) => {
+        request(app)
+          .post(`/words/${word.wordId}?edit=1`)
+          .send({ description: '更新済み' })
+          .expect('Location', `/users/${userId}/mywords`)
+          .expect(302)
+          .end((err, res) => {
+            //単語の説明が更新されていることをテスト
+            Word.findById(word.wordId).then((w) => {
+              assert.equal(w.description, '更新済み');
+            });
+            //組み合わせの説明が更新されていることをテスト
+            Combination.findAll({
+              where: { firstWordId: word.wordId }
+            }).then((combinations) => {
+              combinations.forEach((c) => {
+                assert.equal(c.descriptions[0], '更新済み');
+              });
+            });
+            Combination.findAll({
+              where: { secondWordId: word.wordId }
+            }).then((combinations) => {
+              combinations.forEach((c) => {
+                assert.equal(c.descriptions[1], '更新済み');
+              });
+            });
+            //テストで作成したものを削除
+            Word.findAll({
+              where: { createdBy: 0 }
+            }).then((words) => {
+              return Promise.all(words.map(word => deleteWordAggregate(word)));
+            }).then(() => {
+              if (err) return done(err);
+              done();
+            });
+          });
+      });
+
+
+    });
+  });
+});
+
 
 const deleteWordAggregate = (wordObj) => {
   return Combination.findAll({

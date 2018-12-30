@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h3 説明の編集
+  form(method="post", action=`/words/${word.wordId}?edit=1`)
+    div
+      h5 キーワード
+      p #{word.word}
+    div
+      h5 説明
+      textarea(name="description") #{word.description}
+    div
+      button(type="submit") 完了

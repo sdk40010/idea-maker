@@ -39,5 +39,102 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
   })
 });
 
+router.get('/:wordId/edit', authenticationEnsurer, (req, res, next) => {
+  const wordId = req.params.wordId;
+  Word.findOne({
+    where: { wordId: wordId }
+  }).then((word) => {
+    if (isMine(req, word)) { //作成者のみが編集フォームを開ける
+      res.render('edit', {
+        user: req.user,
+        word: word
+      });
+    } else {
+      const err = new Error('指定された単語がない、または、編集する権限がありません');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+const isMine = (req, word) => {
+  return word && parseInt(word.createdBy) === parseInt(req.user.id);
+};
+
+router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
+  Word.findOne({
+    where: { wordId: req.params.wordId　}
+  }).then((word) => {
+    if (isMine(req, word)) {
+      if (parseInt(req.query.edit) === 1) {
+        console.log('テスト');
+        const updatedAt = new Date();
+        word.update({
+          wordId: word.wordId,
+          word: word.word,
+          description: req.body.description,
+          createdBy: req.user.id,
+          updatedAt: updatedAt
+        }).then(() => {
+          //組み合わせの説明も更新
+          return updateDescriptionOfCombination(word, 'first');
+        }).then(() => {
+          return updateDescriptionOfCombination(word, 'second');
+        }).then(() => {
+          res.redirect(`/users/${req.user.id}/mywords`);
+        });
+      } else {
+        const err = new Error('不正なリクエストです');
+        err.status = 400;
+        next(err);
+      }
+    } else {
+      const err = new Error('指定された単語がない、または、編集する権限がありません');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+const updateDescriptionOfCombination = (wordObj, firstOrSecond) => {
+  return new Promise((resolve) => {
+    if (firstOrSecond === 'first') {
+      Combination.findAll({
+        where: { firstWordId: wordObj.wordId },
+        order: [['"combinationId"', 'DESC']]
+      }).then((combinations) => {
+        return Promise.all(combinations.map((c) => {
+          c.update({ //returnなしでも大丈夫か確かめる
+            combinationId: c.combinationId,
+            combination: c.combination,
+            descriptions: [wordObj.description, c.descriptions[1]],
+            firstWordId: c.firstWordId,
+            secondWordId: c.secondWordId
+          });
+        }));
+      }).then(() => {
+        resolve();
+      });
+    } else if (firstOrSecond === 'second') {
+      Combination.findAll({
+        where: { secondWordId: wordObj.wordId },
+        order: [['"combinationId"', 'DESC']]
+      }).then((combinations) => {
+        return Promise.all(combinations.map((c) => {
+          c.update({ //returnなしでも大丈夫か確かめる
+            combinationId: c.combinationId,
+            combination: c.combination,
+            descriptions: [c.descriptions[0], wordObj.description],
+            firstWordId: c.firstWordId,
+            secondWordId: c.secondWordId
+          });
+        }));
+      }).then(() => {
+        resolve();
+      });
+    }
+  });
+};
+
 module.exports = router;
 
