@@ -3,10 +3,11 @@ jobs:
   build:
     docker:
       - image: circleci/node:8.9.4
-      - image: circleci/postgres:9.5.14-alpine-ram
+      - image: circleci/postgres:9.5-alpine
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: idea_maker
+          POSTGRES_DB: root
+          POSTGRES: root
+          POSTGRES_USER: root
 
     working_directory: ~/repo
 
