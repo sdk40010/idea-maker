@@ -20,7 +20,7 @@ block content
               data-combination-id=combination.combinationId
               data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
             div
-              a(href=`/combinations/${combination.combinationId}?favorite=${favorite}`)# コメントする
+              a(href=`/combinations/${combination.combinationId}?favorite=${favorite}`).commentLink コメントする
           div.col-sm-5
             div.card
               div.card-body

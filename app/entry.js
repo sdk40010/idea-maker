@@ -3,9 +3,7 @@ import $ from 'jquery';
 
 $('.favorite-button').each((i, e) => {
   const favoriteButton = $(e);
-
-
-
+  const commentLink = $($('.commentLink')[i]);
   favoriteButton.click(() => {
     const userId = favoriteButton.attr('data-user-id');
     const combinationId = favoriteButton.attr('data-combination-id');

@@ -97,7 +97,10 @@ __webpack_require__.r(__webpack_exports__);
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function (i, e) {
   var favoriteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
-  var commentLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink');
+  var commentLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]);
+  console.log(e);
+  console.log(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]);
+  console.log(Object.prototype.toString.call(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]));
   favoriteButton.click(function () {
     var userId = favoriteButton.attr('data-user-id');
     var combinationId = favoriteButton.attr('data-combination-id');
