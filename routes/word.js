@@ -62,12 +62,9 @@ const isMine = (req, word) => {
 };
 
 router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
-  Word.findOne({
-    where: { wordId: req.params.wordId　}
-  }).then((word) => {
+  Word.findById(req.params.wordId).then((word) => {
     if (isMine(req, word)) {
       if (parseInt(req.query.edit) === 1) {
-        console.log('テスト');
         const updatedAt = new Date();
         word.update({
           wordId: word.wordId,

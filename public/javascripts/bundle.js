@@ -97,17 +97,19 @@ __webpack_require__.r(__webpack_exports__);
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function (i, e) {
   var favoriteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
+  var commentLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink');
   favoriteButton.click(function () {
-    var userId = favoriteButton.data('user-id');
-    var combinationId = favoriteButton.data('combination-id');
-    var favorite = parseInt(favoriteButton.data('favorite'));
+    var userId = favoriteButton.attr('data-user-id');
+    var combinationId = favoriteButton.attr('data-combination-id');
+    var favorite = parseInt(favoriteButton.attr('data-favorite'));
     var nextFavorite = (favorite + 1) % 2;
     jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
       favorite: nextFavorite
     }, function (data) {
-      favoriteButton.data('favorite', data.favorite);
+      favoriteButton.attr('data-favorite', data.favorite);
       var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
       favoriteButton.text(favoriteLabels[data.favorite]);
+      commentLink.attr('href', "/combinations/".concat(combinationId, "?favorite=").concat(data.favorite));
 
       if (data.favorite === 0) {
         alert('お気に入りから削除しました');
