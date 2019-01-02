@@ -20,7 +20,7 @@ block content
               data-combination-id=combination.combinationId
               data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
             div
-              a(href=`/combinations/${combination.combinationId}?favorite=${favorite}`).commentLink コメントする
+              a(href=`/combinations/${combination.combinationId}`) コメントする
           div.col-sm-5
             div.card
               div.card-body
@@ -28,9 +28,9 @@ block content
                 hr
                 - var hasDescription = (combination.descriptions[0] !== "")
                 if hasDescription
-                  p.card-text.text-muted #{combination.descriptions[0]}
+                  p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[0]}
                 else
-                  p.card-text.text-muted No description
+                  p(style="font-size: 80%;").card-text.text-muted No description
           div.col-sm-5
             div.card
               div.card-body
@@ -38,9 +38,9 @@ block content
                 hr
                 - var hasDescription = (combination.descriptions[1] !== "")
                 if hasDescription
-                  p.card-text.text-muted #{combination.descriptions[1]}
+                  p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[1]}
                 else
-                  p.card-text.text-muted No description
+                  p(style="font-size: 80%;").card-text.text-muted No description
   
 
 

@@ -5,12 +5,12 @@ const Sequelize = loader.Sequelize;
 const Favorite = loader.database.define('favorites', {
   userId: {
     type: Sequelize.INTEGER,
-    primarykey: true,
+    primaryKey: true,
     allowNull: false
   },
   combinationId: {
     type: Sequelize.INTEGER,
-    primarykey: true,
+    primaryKey: true,
     allowNull: false
   },
   favorite: {
@@ -23,12 +23,9 @@ const Favorite = loader.database.define('favorites', {
   }
 }, {
     freezeTableName: true,
-    timestamps: false,
-    indexes: [
-      {
-        fields: ['combinationId']
-      }
-    ] 
+    timestamps: false
   });
 
 module.exports = Favorite;
+
+

@@ -10,8 +10,7 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
   const userId = req.params.userId;
   const combinationId = req.params.combinationId;
   const createdAt = new Date();
-  let favorite = req.body.favorite;
-  favorite = favorite ? parseInt(favorite) : 0;
+  const favorite = parseInt(req.body.favorite);
 
   if (favorite === 0) {
     //お気に入りから削除されたら,データベースからお気に入り情報を削除する

@@ -97,22 +97,17 @@ __webpack_require__.r(__webpack_exports__);
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function (i, e) {
   var favoriteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
-  var commentLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]);
-  console.log(e);
-  console.log(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]);
-  console.log(Object.prototype.toString.call(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.commentLink')[i]));
   favoriteButton.click(function () {
     var userId = favoriteButton.attr('data-user-id');
     var combinationId = favoriteButton.attr('data-combination-id');
     var favorite = parseInt(favoriteButton.attr('data-favorite'));
     var nextFavorite = (favorite + 1) % 2;
-    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId, "/favorites"), {
       favorite: nextFavorite
     }, function (data) {
       favoriteButton.attr('data-favorite', data.favorite);
       var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
       favoriteButton.text(favoriteLabels[data.favorite]);
-      commentLink.attr('href', "/combinations/".concat(combinationId, "?favorite=").concat(data.favorite));
 
       if (data.favorite === 0) {
         alert('お気に入りから削除しました');
@@ -122,6 +117,24 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function 
     });
   });
 });
+var commentButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment-button');
+commentButton.click(function () {
+  var combinationId = commentButton.attr('data-combination-id');
+  var comment = jquery__WEBPACK_IMPORTED_MODULE_0___default()('textarea[name="comment"]').val();
+
+  if (comment) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/combinations/".concat(combinationId, "/comments"), {
+      comment: comment
+    }, function (data) {
+      var commentHtml = getNode(data.comment);
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(commentHtml).prependTo('#comment-area');
+    });
+  }
+});
+
+var getNode = function getNode(commentObj) {
+  return "\n  <div id = \"".concat(commentObj.commentNumber, "\">\n    <div style=\"font-size: 80%; position: relative; height: 2rem;\">\n      <a href=\"/users/").concat(commentObj.createdBy, "/mywords\" style=\"position: absolute; left: 0px;\"> ").concat(commentObj.user.username, " </a>\n      <div style=\"position: absolute; right: 0px;\"> ").concat(commentObj.formattedCreatedAt, " </div>\n    </div>\n    <div>\n      <p> ").concat(commentObj.comment, " </p>\n    </div>\n    <hr>\n  </div>");
+};
 
 /***/ }),
 /* 1 */

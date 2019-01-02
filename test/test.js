@@ -3,11 +3,11 @@ const request = require('supertest');
 const app = require('../app');
 const passportStub = require('passport-stub');
 const assert = require('assert');
-const loader = require('../models/sequelize-loader');
 const User = require('../models/user');
 const Word = require('../models/word');
 const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
+const Comment = require('../models/comment');
 
 describe('/login', () => {
   before(() => {
@@ -93,7 +93,6 @@ describe('/words', () => {
               return Promise.all(words.map(word => deleteWordAggregate(word)));
             }).then(() => {
               if (err) return done(err);
-              //console.log(res.text);
               done();
             });
           });
@@ -159,15 +158,7 @@ describe('/users/:userId/combinations/:combinationId', () => {
             }).then((favorites) => {
               assert.equal(favorites.length, 1);
               assert.equal(favorites[0].favorite, 1);
-            }).then(() => { 
-              //テストで作成したものを削除
-              return Favorite.findAll({
-                where: { userId: userId }
-              });
-            }).then((favorites) => {
-              favorites.map(f => f.destroy());
-            }).then(() => {
-              return Word.findAll({ where: { createdBy: 0 }});
+              return Word.findAll({ where: { createdBy: userId }});
             }).then((words) => {
               return Promise.all(words.map(word => deleteWordAggregate(word)));
             }).then(() => {
@@ -218,7 +209,7 @@ describe('/words/:wordId?edit=1', () => {
       const userId = 0;
       promiseTwoWords.then(() => {
         return Word.findOne({
-          where: { createdBy: 0 },
+          where: { createdBy: userId },
           order: [['"wordId"', 'DESC']]
         });
       }).then((word) => {
@@ -229,18 +220,18 @@ describe('/words/:wordId?edit=1', () => {
           .expect(302)
           .end((err, res) => {
             //単語の説明が更新されていることをテスト
-            Word.findById(word.wordId).then((w) => {
+            const p1 =Word.findById(word.wordId).then((w) => {
               assert.equal(w.description, '更新済み');
             });
             //組み合わせの説明が更新されていることをテスト
-            Combination.findAll({
+            const p2 = Combination.findAll({
               where: { firstWordId: word.wordId }
             }).then((combinations) => {
               combinations.forEach((c) => {
                 assert.equal(c.descriptions[0], '更新済み');
               });
             });
-            Combination.findAll({
+            const p3 = Combination.findAll({
               where: { secondWordId: word.wordId }
             }).then((combinations) => {
               combinations.forEach((c) => {
@@ -248,8 +239,8 @@ describe('/words/:wordId?edit=1', () => {
               });
             });
             //テストで作成したものを削除
-            Word.findAll({
-              where: { createdBy: 0 }
+            Promise.all([p1, p2, p3]).then(() => {
+              return Word.findAll({ where: { createdBy: userId } });
             }).then((words) => {
               return Promise.all(words.map(word => deleteWordAggregate(word)));
             }).then(() => {
@@ -264,14 +255,112 @@ describe('/words/:wordId?edit=1', () => {
   });
 });
 
+describe('combinations/:combinations/comments', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('コメントができる', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      //投稿を二つ作成
+      const promiseTwoWords = new Promise((resolve) => {
+        request(app)
+          .post('/words')
+          .send({ word: 'コメント投稿ワード1', description: 'コメント投稿説明1' })
+          .expect('Location', /\//)
+          .expect(302)
+          .end((err, res) => {
+            request(app)
+              .post('/words')
+              .send({ word: 'コメント投稿ワード2', description: 'コメント投稿説明2' })
+              .expect('Location', /\//)
+              .expect(302)
+              .end((err, res) => {
+                if (err) done(err);
+                resolve();
+              });
+          });
+      });
+
+      const userId = 0;
+      promiseTwoWords.then(() => {
+        return Word.findOne({
+          where: { createdBy: userId }, //userIdでも大丈夫か確認
+          order: [['"wordId"', 'DESC']]
+        });
+      }).then((word) => {
+        return Combination.findOne({
+          where: { firstWordId: word.wordId },
+          order: [['"combinationId"', 'DESC']]
+        });
+      }).then((combination) => {
+        request(app)
+          .post(`/combinations/${combination.combinationId}/comments`)
+          .send({ comment: 'テストコメント' })
+          .expect((res)=>{
+            res.body.should.hasOwnProperty('comment');
+          })
+          .end((err, res) => {
+            Comment.findAll({
+              where: { combinationId: combination.combinationId }
+            }).then((comments) => {
+              assert.equal(comments.length, 1);
+              assert.equal(comments[0].comment, 'テストコメント');
+              //テストで作成したものを削除
+              return Word.findAll({ where: { createdBy: userId } });
+            }).then((words) => {
+              return Promise.all(words.map(word => deleteWordAggregate(word)));
+            }).then(() => {
+              if (err) return done(err);
+              done();
+            })
+          });
+      });
+
+
+
+    });
+  });
+
+});
 
 const deleteWordAggregate = (wordObj) => {
+  let storedCombinations = null;
   return Combination.findAll({
     where: { firstWordId: wordObj.wordId }
   }).then((combinations) => {
-    const promises = combinations.map(c => c.destroy());
+    storedCombinations = combinations;
+    //コメントの削除
+    const promises = combinations.map((combination) => {
+      Comment.findAll({
+        where: { combinationId: combination.combinationId }
+      }).then((comments) => {
+        return Promise.all(comments.map(comment => { comment.destroy() }));
+      });
+    });
     return Promise.all(promises);
   }).then(() => {
+    //お気に入りの削除
+    const promises = storedCombinations.map((combination) => {
+      Favorite.findAll({
+        where: { combinationId: combination.combinationId }
+      }).then((favorites) => {
+        return Promise.all(favorites.map(favorite => { favorite.destroy() }));
+      });
+    });
+    return Promise.all(promises);
+  }).then(() => {
+    //組み合わせの削除
+    return Promise.all(storedCombinations.map(combination => combination.destroy()));
+  }).then(() => {
+    //単語の削除
     return wordObj.destroy();
   });
-};
+}
+

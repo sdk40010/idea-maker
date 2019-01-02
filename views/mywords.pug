@@ -11,7 +11,7 @@ block content
           - var hasDescription = word.description !== ""
           if hasDescription
             div(style="width: 90%")
-              p.cart-text.text-muted #{word.description}
+              p.card-text.text-muted #{word.description}
           else
             p.text-muted No description
           - var isMine = parseInt(user.id) === word.createdBy

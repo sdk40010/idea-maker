@@ -12,12 +12,15 @@ var User = require('./models/user');
 var Word = require('./models/word');
 var Combination = require('./models/combination');
 var Favorite = require('./models/favorite');
+var Comment = require('./models/comment');
 User.sync().then(() => {
   Combination.sync();
   Word.belongsTo(User, { foreignKey: 'createdBy' });
   Word.sync();
   Favorite.belongsTo(User, { foreignKey: 'userId' });
   Favorite.sync();
+  Comment.belongsTo(User, { foreignKey: 'createdBy' });
+  Comment.sync();
 });
 
 
@@ -55,6 +58,8 @@ var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var wordsRouter = require('./routes/word');
 var favoritesRouter = require('./routes/favorite');
+var combinationsRouter = require('./routes/combinaton');
+var commentsRouter = require('./routes/comment');
 
 var app = express();
 app.use(helmet());
@@ -78,6 +83,8 @@ app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/words', wordsRouter);
 app.use('/users', favoritesRouter);
+app.use('/combinations', combinationsRouter);
+app.use('/combinations', commentsRouter);
 
 app.get('/auth/github',
   passport.authenticate('github', { scope: ['user:email'] }),
