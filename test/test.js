@@ -151,7 +151,7 @@ describe('/users/:userId/combinations/:combinationId', () => {
         request(app)
           .post(`/users/${userId}/combinations/${combination.combinationId}`)
           .send({ favorite: 1 }) //お気に入りに追加
-          .expect('{"status":"OK","favorite":1}')
+          .expect('{"status":"OK","favorite":1,"favoriteCounter":1}')
           .end((err, res) => {
             Favorite.findAll({
               where: {combinationId: combination.combinationId}
@@ -304,8 +304,11 @@ describe('combinations/:combinations/comments', () => {
         request(app)
           .post(`/combinations/${combination.combinationId}/comments`)
           .send({ comment: 'テストコメント' })
-          .expect((res)=>{
+          .expect((res) => {
+            res.status.should.equal(200);
             res.body.should.hasOwnProperty('comment');
+            res.body.should.hasOwnProperty('commentCounter');
+            res.body.commentCounter.should.equal(1);
           })
           .end((err, res) => {
             Comment.findAll({
@@ -382,6 +385,8 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
           .expect(200)
           .expect((res)=>{
             res.body.should.hasOwnProperty('comment');
+            res.body.should.hasOwnProperty('commentCounter');
+            res.body.commentCounter.should.equal(1);
           })
           .end((err, res) => {
             Comment.findAll({
@@ -400,7 +405,7 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
         return new Promise((resolve) => {
           request(app)
           .post(`/combinations/${comment.combinationId}/comments/${comment.commentNumber}?delete=1`)
-          .expect('{"status":"OK"}')
+          .expect('{"status":"OK","commentCounter":0}')
           .end((err, res) => {
             if (err) return done(err);
             resolve(comment);

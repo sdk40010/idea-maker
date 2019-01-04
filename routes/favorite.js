@@ -2,9 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
-const Word = require('../models/word');
+const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
-const moment = require('moment-timezone');
 
 router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req, res, next) => {
   const userId = req.params.userId;
@@ -19,9 +18,16 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
     }).then((favorite) => {
       return favorite.destroy();
     }).then(() => {
-      res.json({ status: 'OK', favorite: 0 });
+      //お気に入りカウンターの数字を1減らす
+      return Combination.findById(combinationId);
+    }).then((combination) => {
+      return combination.update({
+        favoriteCounter: combination.favoriteCounter - 1
+      });
+    }).then((updatedCombination) => {
+      res.json({ status: 'OK', favorite: favorite, favoriteCounter: updatedCombination.favoriteCounter });
     });
-  } else {
+  } else if(favorite === 1){
     //お気に入りに追加されたら、データベースにお気に入り情報を保存する
     Favorite.create({
       userId: userId,
@@ -29,26 +35,16 @@ router.post('/:userId/combinations/:combinationId', authenticationEnsurer, (req,
       favorite: favorite,
       createdAt: createdAt
     }).then(() => {
-      res.json({ status: 'OK', favorite: favorite });
+      //お気に入りカウンターの数値を1増やす
+      return Combination.findById(combinationId);
+    }).then((combination) => {
+      return combination.update({
+        favoriteCounter: combination.favoriteCounter + 1
+      });
+    }).then((updatedCombination) => {
+      res.json({ status: 'OK', favorite: favorite , favoriteCounter: updatedCombination.favoriteCounter});
     });
   }
-});
-
-router.get('/:userId/mywords', authenticationEnsurer, (req, res, next) => {
-  const userId = req.params.userId;
-  Word.findAll({
-    where: { createdBy: userId },
-    order: [['"createdAt"', 'DESC']]
-  }).then((words) => {
-    words.forEach((word) => {
-      word.formattedCreatedAt = moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-      word.formattedUpdatedAt = moment(word.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-    });
-    res.render('mywords', {
-      user: req.user,
-      words: words
-    });
-  });
 });
 
 module.exports = router;

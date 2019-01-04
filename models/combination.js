@@ -17,6 +17,16 @@ const Combination = loader.database.define('combinations', {
     type: Sequelize.ARRAY(Sequelize.STRING),
     allowNull: false
   },
+  favoriteCounter: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  commentCounter: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
   firstWordId: {
     type: Sequelize.INTEGER,
     allowNull: false

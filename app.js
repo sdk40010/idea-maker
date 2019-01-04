@@ -60,6 +60,7 @@ var wordsRouter = require('./routes/word');
 var favoritesRouter = require('./routes/favorite');
 var combinationsRouter = require('./routes/combinaton');
 var commentsRouter = require('./routes/comment');
+var usersRouter = require('./routes/user');
 
 var app = express();
 app.use(helmet());
@@ -85,6 +86,7 @@ app.use('/words', wordsRouter);
 app.use('/users', favoritesRouter);
 app.use('/combinations', combinationsRouter);
 app.use('/combinations', commentsRouter);
+app.use('/users', usersRouter);
 
 app.get('/auth/github',
   passport.authenticate('github', { scope: ['user:email'] }),

@@ -105,16 +105,18 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function 
     var combinationId = favoriteButton.attr('data-combination-id');
     var favorite = parseInt(favoriteButton.attr('data-favorite'));
     var nextFavorite = (favorite + 1) % 2;
-    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId, "/favorites"), {
+    var favoriteCounter = jquery__WEBPACK_IMPORTED_MODULE_0___default()(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-counter')[i]);
+    jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
       favorite: nextFavorite
     }, function (data) {
       favoriteButton.attr('data-favorite', data.favorite);
       var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
       favoriteButton.text(favoriteLabels[data.favorite]);
+      favoriteCounter.text(data.favoriteCounter);
 
       if (data.favorite === 0) {
         alert('お気に入りから削除しました');
-      } else {
+      } else if (data.favorite === 1) {
         alert('お気に入りに追加しました');
       }
     });
@@ -124,6 +126,7 @@ var commentButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment-butt
 commentButton.click(function () {
   var combinationId = commentButton.attr('data-combination-id');
   var comment = jquery__WEBPACK_IMPORTED_MODULE_0___default()('textarea[name="comment"]').val();
+  var commentCounter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.comment-counter');
 
   if (comment) {
     jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/combinations/".concat(combinationId, "/comments"), {
@@ -134,38 +137,24 @@ commentButton.click(function () {
       var commentHtml = getCommentHtml(data.comment);
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(commentHtml).prependTo('#comment-area');
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('textarea[name="comment"]').val('');
+      commentCounter.text("".concat(data.commentCounter, "\u4EF6\u306E\u30B3\u30E1\u30F3\u30C8"));
     });
   }
 });
 
 var getCommentHtml = function getCommentHtml(commentObj) {
   return "\n  <div id=\"".concat(commentObj.commentNumber, "\" style=\"position: relative; padding-top: 24px;\" >\n    <a href=\"/users/").concat(commentObj.createdBy, "/mywords\" style=\"font-size: 80%; position: absolute; top: 0px; left: 0px;\"> ").concat(commentObj.user.username, " </a>\n    <div style=\"font-size: 80%; position: absolute; top: 0px; right: 0px;\"> ").concat(commentObj.formattedCreatedAt, " </div>\n    <div style=\"width: 95%; white-space: pre-wrap; margin-top: 10px;\"> ").concat(commentObj.comment, " </div>\n    <button style=\"position: absolute; top: 34px; right: 0px; \" class=\"btn btn-outline-danger btn-sm delete-button\" data-combination-id=\"").concat(commentObj.combinationId, "\" data-comment-number=\"").concat(commentObj.commentNumber, "\"> \u524A\u9664 </button> \n    <hr>\n  </div>");
-}; // $('#comment-area').on('click', '.delete-button', (e) => {
-//   if (confirm('コメントを削除しますか？')) {
-//     const combinationId = $(e.currentTarget).attr('data-combination-id');
-//     const commentNumber = $(e.currentTarget).attr('data-comment-number');
-//     $.post(`/combinations/${combinationId}/comments/${commentNumber}?delete=1`, null,
-//       (data) => {
-//         if (data.status === 'OK') {
-//           $(`#${commentNumber}`).remove();
-//         } else if (data.status === 'Bad request') {
-//           //アラートを表示させる
-//         } else if (data.status === 'Not found') {
-//           //同様
-//         }
-//       }
-//     );
-//   }
-// });
-
+};
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment-area').on('click', '.delete-button', function () {
   if (confirm('コメントを削除しますか？')) {
     var combinationId = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr('data-combination-id');
     var commentNumber = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr('data-comment-number');
+    var commentCounter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.comment-counter');
     jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/combinations/".concat(combinationId, "/comments/").concat(commentNumber, "?delete=1"), null, function (data) {
       if (data.status === 'OK') {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()("#".concat(commentNumber)).remove();
+        commentCounter.text("".concat(data.commentCounter, "\u4EF6\u306E\u30B3\u30E1\u30F3\u30C8"));
       } else if (data.status === 'Bad request') {//アラートを表示させる
       } else if (data.status === 'Not found') {//同様
       }

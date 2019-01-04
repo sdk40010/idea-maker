@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const User = require('../models/user');
+const Combination = require('../models/combination');
 const Comment = require('../models/comment');
 
 router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) => {
@@ -10,6 +11,7 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
   const comment = req.body.comment;
   const createdBy = req.user.id;
   let commentNumber = null;
+  let storedComment = null;
   Comment.count({
     where: { combinationId: combinationId }
   }).then((count) => {
@@ -32,7 +34,14 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
       where: { combinationId: combinationId, commentNumber: commentNumber }
     });
   }).then((comment) => {
-    res.json({ status: 'OK', comment: comment });
+    storedComment = comment;
+    return Combination.findById(combinationId);
+  }).then((combination) => {
+    return combination.update({
+      commentCounter: combination.commentCounter + 1
+    });
+  }).then((updatedCombination) => {
+    res.json({ status: 'OK', comment: storedComment, commentCounter: updatedCombination.commentCounter });
   });
 });
 
@@ -62,7 +71,13 @@ router.post('/:combinationId/comments/:commentNumber', authenticationEnsurer, (r
       }
     });
   }).then(() => {
-    res.json({ status: 'OK' });
+    return Combination.findById(combinationId);
+  }).then((combination) => {
+    return combination.update({
+      commentCounter: combination.commentCounter - 1
+    });
+  }).then((updatedCombination) => {
+    res.json({ status: 'OK', commentCounter: updatedCombination.commentCounter });
   });
 
 });

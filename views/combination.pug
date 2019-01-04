@@ -9,6 +9,7 @@ block content
         data-user-id=user.id
         data-combination-id=combination.combinationId
         data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
+      span.favorite-counter #{combination.favoriteCounter}
     div.col-sm-5
       div.card
         div.card-body
@@ -30,11 +31,12 @@ block content
           else
             p(style="font-size: 80%;").card-text.text-muted No description
   div
-    textarea(name="comment")
+    textarea(name="comment" placeholder="コメントを入力")
     button(
       data-combination-id=combination.combinationId)#comment-button 送信
   div
     h3 コメント
+    p.comment-counter #{combination.commentCounter}件のコメント
     hr
     div#comment-area
       - var hasComment = comments.length > 0
