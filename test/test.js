@@ -416,7 +416,7 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
       }).then((comments) => {
         assert.equal(comments.length, 0);
         //テストで作成したものを削除
-        return Word.findAll({ createdBy: userId });
+        return Word.findAll({ where: { createdBy: userId } });
       }).then((words) => {
         return Promise.all(words.map(word => deleteWordAggregate(word)));
       }).then(() => {

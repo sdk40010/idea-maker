@@ -36,9 +36,9 @@ block content
   div
     h3 コメント
     hr
-    - var hasComment = comments.length > 0
-    if hasComment
-      div#comment-area
+    div#comment-area
+      - var hasComment = comments.length > 0
+      if hasComment
         each comment in comments
           div(id=`${comment.commentNumber}` style="position: relative; padding-top: 24px;" )
             a(href=`/users/${comment.createdBy}/mywords`, style="font-size: 80%; position: absolute; top: 0px; left: 0px;") #{comment.user.username}
