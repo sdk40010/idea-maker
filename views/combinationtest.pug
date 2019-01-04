@@ -43,10 +43,10 @@ block content
           div(id=`${comment.commentNumber}` style="position: relative; padding-top: 24px;" )
             a(href=`/users/${comment.createdBy}/mywords`, style="font-size: 80%; position: absolute; top: 0px; left: 0px;") #{comment.user.username}
             div(style="font-size: 80%; position: absolute; top: 0px; right: 0px;") #{comment.formattedCreatedAt}
-            div(style="width: 95%; white-space: pre-wrap; margin-top: 10px;") #{comment.comment}
+            div(style=" width: 90%; white-space: pre-wrap; margin-top: 10px") #{comment.comment}
             - var isMine = parseInt(user.id) === comment.createdBy
             if isMine
-              button(style="position: absolute; top: 34px; right: 0px"
+              button(
                 data-combination-id=comment.combinationId
-                data-comment-number=comment.commentNumber).delete-button.btn.btn-outline-danger.btn-sm 削除
+                data-comment-number=comment.commentNumber)#delete-button 削除
             hr

@@ -1,5 +1,6 @@
 'use strict';
 import $ from 'jquery';
+import moment from 'moment-timezone';
 
 $('.favorite-button').each((i, e) => {
   const favoriteButton = $(e);
@@ -34,26 +35,48 @@ commentButton.click(() => {
     $.post(`/combinations/${combinationId}/comments`,
       { comment: comment },
       (data) => {
-        const commentHtml = getNode(data.comment);
+        data.comment.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+        data.comment.formattedUpdatedAt = moment(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+        const commentHtml = getCommentHtml(data.comment);
         $(commentHtml).prependTo('#comment-area');
-      }
-    );
+        $('textarea[name="comment"]').val('');
+      });
   }
 
 
 });
 
-const getNode = (commentObj) => {
+const getCommentHtml = (commentObj) => {
   return `
-  <div id = "${commentObj.commentNumber}">
-    <div style="font-size: 80%; position: relative; height: 2rem;">
-      <a href="/users/${commentObj.createdBy}/mywords" style="position: absolute; left: 0px;"> ${commentObj.user.username} </a>
-      <div style="position: absolute; right: 0px;"> ${commentObj.formattedCreatedAt} </div>
-    </div>
-    <div>
-      <p> ${commentObj.comment} </p>
-    </div>
+  <div id="${commentObj.commentNumber}" style="position: relative; padding-top: 24px;" >
+    <a href="/users/${commentObj.createdBy}/mywords" style="font-size: 80%; position: absolute; top: 0px; left: 0px;"> ${commentObj.user.username} </a>
+    <div style="font-size: 80%; position: absolute; top: 0px; right: 0px;"> ${commentObj.formattedCreatedAt} </div>
+    <div style="width: 95%; white-space: pre-wrap; margin-top: 10px;"> ${commentObj.comment} </div>
+    <button style="position: absolute; top: 34px; right: 0px; " class="btn btn-outline-danger btn-sm delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}"> 削除 </button> 
     <hr>
   </div>`;
-}
+};
+
+$('#comment-area').on('click', '.delete-button', function() {
+  if (confirm('コメントを削除しますか？')) {
+    const combinationId = $(this).attr('data-combination-id');
+    const commentNumber = $(this).attr('data-comment-number');
+
+    $.post(`/combinations/${combinationId}/comments/${commentNumber}?delete=1`, null,
+      (data) => {
+        if (data.status === 'OK') {
+          $(`#${commentNumber}`).remove();
+        } else if (data.status === 'Bad request') {
+          //アラートを表示させる
+        } else if (data.status === 'Not found') {
+          //同様
+        }
+      }
+    );
+  }
+});
+
+
+
+
 

@@ -11,8 +11,8 @@ block content
           - var hasDescription = word.description !== ""
           if hasDescription
             div(style="width: 90%")
-              p.card-text.text-muted #{word.description}
+              p(style="font-size: 80%;").card-text.text-muted #{word.description}
           else
-            p.text-muted No description
+            p(style="font-size: 80%;").text-muted No description
           - var isMine = parseInt(user.id) === word.createdBy
             a(href=`/words/${word.wordId}/edit`).card-link 編集

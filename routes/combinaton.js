@@ -31,7 +31,7 @@ router.get('/:combinationId', authenticationEnsurer, (req, res, next) => {
     }).then((comments) => {
       comments.forEach((comment) => {
         comment.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-        comment.formattedupdatedAt = moment(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+        comment.formattedUpdatedAt = moment(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
       });
       res.render('combination', {
         user: req.user,

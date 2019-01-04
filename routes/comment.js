@@ -4,7 +4,6 @@ const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const User = require('../models/user');
 const Comment = require('../models/comment');
-const moment = require('moment-timezone');
 
 router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) => {
   const combinationId = req.params.combinationId;
@@ -33,10 +32,43 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
       where: { combinationId: combinationId, commentNumber: commentNumber }
     });
   }).then((comment) => {
-    comment.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-    comment.formattedupdatedAt = moment(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
     res.json({ status: 'OK', comment: comment });
   });
 });
+
+router.post('/:combinationId/comments/:commentNumber', authenticationEnsurer, (req, res, next) => {
+  const combinationId = req.params.combinationId;
+  const commentNumber = req.params.commentNumber;
+  Comment.findOne({
+    where: { combinationId: combinationId, commentNumber: commentNumber }
+  }).then((comment) => {
+    return new Promise((resolve) => { //resolveはelseの中にも入れる？
+      if (isMine(req, comment)) {
+        if (parseInt(req.query.delete) === 1) {
+          comment.destroy().then(() => {
+            resolve();
+          });
+        } else {
+          const err = new Error('不正なリクエストです');
+          err.status = 400;
+          next(err);
+          res.json({ status: 'Bad Request' });
+        }
+      } else {
+        const err = new Error('指定されたコメントがない、または、編集する権限がありません');
+        err.status = 404;
+        next(err);
+        res.json({ status: 'Not Found' });
+      }
+    });
+  }).then(() => {
+    res.json({ status: 'OK' });
+  });
+
+});
+
+const isMine = (req, comment) => {
+  return comment && parseInt(comment.createdBy) === parseInt(req.user.id);
+};
 
 module.exports = router;
