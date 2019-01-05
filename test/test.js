@@ -306,8 +306,8 @@ describe('combinations/:combinations/comments', () => {
           .send({ comment: 'テストコメント' })
           .expect((res) => {
             res.status.should.equal(200);
-            res.body.should.hasOwnProperty('comment');
-            res.body.should.hasOwnProperty('commentCounter');
+            res.body.should.have.property('comment');
+            res.body.should.have.property('commentCounter');
             res.body.commentCounter.should.equal(1);
           })
           .end((err, res) => {
@@ -384,8 +384,8 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
           .send({ comment: 'テストコメント' })
           .expect(200)
           .expect((res)=>{
-            res.body.should.hasOwnProperty('comment');
-            res.body.should.hasOwnProperty('commentCounter');
+            res.body.should.have.property('comment');
+            res.body.should.have.property('commentCounter');
             res.body.commentCounter.should.equal(1);
           })
           .end((err, res) => {
@@ -430,6 +430,86 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
     });
   });
 });
+
+describe('/words/:wordId?delete=1', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('単語が削除でき、その単語を使った組み合わせも削除される', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      //投稿を二つ作成
+      const promiseTwoWords = new Promise((resolve) => {
+        request(app)
+          .post('/words')
+          .send({ word: '単語削除ワード1', description: '単語削除説明1' })
+          .expect('Location', /\//)
+          .expect(302)
+          .end((err, res) => {
+            request(app)
+              .post('/words')
+              .send({ word: '単語削除ワード2', description: '単語削除説明2' })
+              .expect('Location', /\//)
+              .expect(302)
+              .end((err, res) => {
+                if (err) done(err);
+                resolve();
+              });
+          });
+      });
+
+      const userId = 0;
+      let storedWordId = null;
+      //単語を削除
+      const promiseDeleted = promiseTwoWords.then(() => {
+        return Word.findOne({
+          where: { createdBy: userId },
+          order: [['wordId', 'DESC']]
+        });
+      }).then((word) => {
+        storedWordId = word.wordId;
+        return new Promise((resolve) => {
+          request(app)
+          .post(`/words/${word.wordId}?delete=1`)
+          .end((err, res) => {
+            if (err) done(err);
+            resolve();
+          });
+        });
+      });
+
+      //テスト
+      promiseDeleted.then(() => {
+        const p1 = Word.findById(storedWordId).then((word) => {
+          assert.equal(!word, true);
+        });
+
+        const p2 = Combination.findAll({
+          where: { firstWordId: storedWordId }
+        }).then((combinations) => {
+          assert.equal(combinations.length, 0);
+        });
+
+        //テストで作成したものを削除
+        Promise.all([p1, p2]).then(() => {
+          return Word.findAll({ where: { createdBy: userId } });
+        }).then((words) => {
+          return Promise.all(words.map(word => deleteWordAggregate(word)));
+        }).then(() => {
+          done();
+        });
+
+      });
+    });
+  });
+});
+
 
 
 const deleteWordAggregate = (wordObj) => {

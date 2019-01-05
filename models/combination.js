@@ -14,7 +14,7 @@ const Combination = loader.database.define('combinations', {
     allowNull: false
   },
   descriptions: {
-    type: Sequelize.ARRAY(Sequelize.STRING),
+    type: Sequelize.ARRAY(Sequelize.TEXT),
     allowNull: false
   },
   favoriteCounter: {

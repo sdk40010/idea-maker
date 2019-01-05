@@ -39,7 +39,6 @@ commentButton.click(() => {
       { comment: comment },
       (data) => {
         data.comment.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-        data.comment.formattedUpdatedAt = moment(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
         const commentHtml = getCommentHtml(data.comment);
         $(commentHtml).prependTo('#comment-area');
         $('textarea[name="comment"]').val('');
@@ -53,10 +52,10 @@ commentButton.click(() => {
 const getCommentHtml = (commentObj) => {
   return `
   <div id="${commentObj.commentNumber}" style="position: relative; padding-top: 24px;" >
-    <a href="/users/${commentObj.createdBy}/mywords" style="font-size: 80%; position: absolute; top: 0px; left: 0px;"> ${commentObj.user.username} </a>
-    <div style="font-size: 80%; position: absolute; top: 0px; right: 0px;"> ${commentObj.formattedCreatedAt} </div>
-    <div style="width: 95%; white-space: pre-wrap; margin-top: 10px;"> ${commentObj.comment} </div>
-    <button style="position: absolute; top: 34px; right: 0px; " class="btn btn-outline-danger btn-sm delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}"> 削除 </button> 
+    <a href="/users/${commentObj.createdBy}/mywords" style="font-size: 80%; position: absolute; top: 0px; left: 0px;">${commentObj.user.username}</a>
+    <div style="font-size: 80%; position: absolute; top: 0px; right: 0px;">${commentObj.formattedCreatedAt}</div>
+    <div style="width: 95%; white-space: pre-wrap; margin-top: 10px;">${commentObj.comment}</div>
+    <button style="position: absolute; top: 34px; right: 0px; " class="btn btn-outline-danger btn-sm delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}">削除</button> 
     <hr>
   </div>`;
 };

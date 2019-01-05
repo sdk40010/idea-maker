@@ -29,7 +29,7 @@ block content
                 hr
                 - var hasDescription = (combination.descriptions[0] !== "")
                 if hasDescription
-                  p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[0]}
+                  p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[0]}
                 else
                   p(style="font-size: 80%;").card-text.text-muted No description
           div.col-sm-5
@@ -39,7 +39,7 @@ block content
                 hr
                 - var hasDescription = (combination.descriptions[1] !== "")
                 if hasDescription
-                  p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[1]}
+                  p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[1]}
                 else
                   p(style="font-size: 80%;").card-text.text-muted No description
   

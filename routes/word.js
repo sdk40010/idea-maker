@@ -80,6 +80,26 @@ router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
         }).then(() => {
           res.redirect(`/users/${req.user.id}/mywords`);
         });
+      } else if (parseInt(req.query.delete) === 1) {
+        let storedCombinations = null;
+        //削除したい単語が使われている組み合わせを見つける
+        Combination.findAll({
+          where: { firstWordId: word.wordId }
+        }).then((combinations) => {
+          //お気に入りもコメントもついていない組み合わせだけを取り出す
+          storedCombinations = combinations.filter(c => c.favoriteCounter === 0 && c.commentCounter === 0);
+          return Combination.findAll({
+            where: { secondWordId: word.wordId }
+          });
+        }).then((combinations) => {
+          return storedCombinations.concat(combinations.filter(c => c.favoriteCounter === 0 && c.commentCounter === 0));
+        }).then((deleteCombinations) => {
+          return Promise.all(deleteCombinations.map(d => d.destroy()));
+        }).then(() => {
+          return word.destroy();
+        }).then(() => {
+          res.redirect(`/users/${req.user.id}/mywords`);
+        });
       } else {
         const err = new Error('不正なリクエストです');
         err.status = 400;

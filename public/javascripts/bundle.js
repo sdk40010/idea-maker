@@ -133,7 +133,6 @@ commentButton.click(function () {
       comment: comment
     }, function (data) {
       data.comment.formattedCreatedAt = moment_timezone__WEBPACK_IMPORTED_MODULE_1___default()(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
-      data.comment.formattedUpdatedAt = moment_timezone__WEBPACK_IMPORTED_MODULE_1___default()(comment.updatedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
       var commentHtml = getCommentHtml(data.comment);
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(commentHtml).prependTo('#comment-area');
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('textarea[name="comment"]').val('');
@@ -143,7 +142,7 @@ commentButton.click(function () {
 });
 
 var getCommentHtml = function getCommentHtml(commentObj) {
-  return "\n  <div id=\"".concat(commentObj.commentNumber, "\" style=\"position: relative; padding-top: 24px;\" >\n    <a href=\"/users/").concat(commentObj.createdBy, "/mywords\" style=\"font-size: 80%; position: absolute; top: 0px; left: 0px;\"> ").concat(commentObj.user.username, " </a>\n    <div style=\"font-size: 80%; position: absolute; top: 0px; right: 0px;\"> ").concat(commentObj.formattedCreatedAt, " </div>\n    <div style=\"width: 95%; white-space: pre-wrap; margin-top: 10px;\"> ").concat(commentObj.comment, " </div>\n    <button style=\"position: absolute; top: 34px; right: 0px; \" class=\"btn btn-outline-danger btn-sm delete-button\" data-combination-id=\"").concat(commentObj.combinationId, "\" data-comment-number=\"").concat(commentObj.commentNumber, "\"> \u524A\u9664 </button> \n    <hr>\n  </div>");
+  return "\n  <div id=\"".concat(commentObj.commentNumber, "\" style=\"position: relative; padding-top: 24px;\" >\n    <a href=\"/users/").concat(commentObj.createdBy, "/mywords\" style=\"font-size: 80%; position: absolute; top: 0px; left: 0px;\">").concat(commentObj.user.username, "</a>\n    <div style=\"font-size: 80%; position: absolute; top: 0px; right: 0px;\">").concat(commentObj.formattedCreatedAt, "</div>\n    <div style=\"width: 95%; white-space: pre-wrap; margin-top: 10px;\">").concat(commentObj.comment, "</div>\n    <button style=\"position: absolute; top: 34px; right: 0px; \" class=\"btn btn-outline-danger btn-sm delete-button\" data-combination-id=\"").concat(commentObj.combinationId, "\" data-comment-number=\"").concat(commentObj.commentNumber, "\">\u524A\u9664</button> \n    <hr>\n  </div>");
 };
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment-area').on('click', '.delete-button', function () {

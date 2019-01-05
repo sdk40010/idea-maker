@@ -19,12 +19,15 @@ const Comment = loader.database.define('comments', {
   },
   createdBy: {
     type: Sequelize.INTEGER,
-    primaryKey: true,
+    allowNull: false
+  },
+  createdAt: {
+    type: Sequelize.DATE,
     allowNull: false
   }
 }, {
     freezeTableName: true,
-    timestamps: true
+    timestamps: false
   });
 
 module.exports = Comment;

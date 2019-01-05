@@ -10,6 +10,7 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
   const combinationId = req.params.combinationId;
   const comment = req.body.comment;
   const createdBy = req.user.id;
+  const createdAt = new Date();
   let commentNumber = null;
   let storedComment = null;
   Comment.count({
@@ -22,6 +23,7 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
       commentNumber: commentNumber,
       comment: comment,
       createdBy: createdBy,
+      createdAt: createdAt
     });
   }).then(() => {
     return Comment.findOne({

@@ -17,7 +17,7 @@ block content
           hr
           - var hasDescription = combination.descriptions[0] !== ''
           if hasDescription
-            p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[0]}
+            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[0]}
           else
             p(style="font-size: 80%;").card-text.text-muted No description
     div.col-sm-5
@@ -27,7 +27,7 @@ block content
           hr
           - var hasDescription = combination.descriptions[1] !== ''
           if hasDescription
-            p(style="font-size: 80%;").card-text.text-muted #{combination.descriptions[1]}
+            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[1]}
           else
             p(style="font-size: 80%;").card-text.text-muted No description
   div
@@ -50,5 +50,5 @@ block content
             if isMine
               button(style="position: absolute; top: 34px; right: 0px"
                 data-combination-id=comment.combinationId
-                data-comment-number=comment.commentNumber).delete-button.btn.btn-outline-danger.btn-sm 削除
+                data-comment-number=comment.commentNumber).delete-button.btn.btn-outline-secondary.btn-sm 削除
             hr
