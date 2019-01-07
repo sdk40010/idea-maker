@@ -61,13 +61,13 @@ router.get('/:combinationId', authenticationEnsurer, (req, res, next) => {
       wordMap.set(word.wordId, {
         word: word.word,
         description: word.description,
-        createdBy: word.wordId,
+        createdBy: word.createdBy,
         username: word.user.username,
         formattedCreatedAt: moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm'),
         isUpdated: word.createdAt.getTime() < word.updatedAt.getTime()
       });
     });
-    res.render('combinationtest', {
+    res.render('combination', {
       user: req.user,
       combination: storedCombination,
       favoriteInfo: storedFavoriteInfo,

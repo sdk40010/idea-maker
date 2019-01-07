@@ -26,3 +26,34 @@ a {
   font-size: 80%;
   white-space: pre-wrap;
 }
+
+.comment-container{
+  position: relative;
+  padding-top: 24px;
+}
+
+.comment-username{
+  font-size: 80%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.comment-creation-day{
+  font-size: 80%;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.comment{
+  width: 95%;
+  white-space: pre-wrap;
+  margin-top: 10px;
+}
+
+.comment-delete-button{
+  position: absolute;
+  top: 34px;
+  right: 0px;
+}

@@ -37,7 +37,7 @@ router.get('/', (req, res, next) => {
         include: [
           {
             model: User,
-            attributes: ['userId', 'username']
+            attributes: ['username']
           }
         ],
         order: [['"wordId"', 'DESC']]
@@ -47,7 +47,9 @@ router.get('/', (req, res, next) => {
       const wordMap = new Map(); //key: wordId, value: Word
       words.forEach((word) => {
         wordMap.set(word.wordId, {
-          createdBy: word.user.userId,
+          word: word.word,
+          description: word.description,
+          createdBy: word.createdBy,
           username: word.user.username,
           formattedCreatedAt: moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm'),
           isUpdated: word.createdAt.getTime() < word.updatedAt.getTime() //その単語が更新されているか

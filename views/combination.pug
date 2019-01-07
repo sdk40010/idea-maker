@@ -12,24 +12,36 @@ block content
       span.favorite-counter #{combination.favoriteCounter}
     div.col-sm-5
       div.card
+        - var firstWord = wordMap.get(combination.firstWordId)
+        div.card-header
+          a(href=`/users/${firstWord.createdBy}/mywords`).card-link.word-username #{firstWord.username}
+          span.word-creation-day #{firstWord.formattedCreatedAt}
+          if firstWord.isUpdated
+            span.small-font.text-muted (編集済)
         div.card-body
-          h5.card-title #{combination.combination[0]}
+          h5.card-title #{firstWord.word}
           hr
-          - var hasDescription = combination.descriptions[0] !== ''
+          - var hasDescription = firstWord.description
           if hasDescription
-            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[0]}
+            p.card-text.text-muted.word-description #{firstWord.description}
           else
-            p(style="font-size: 80%;").card-text.text-muted No description
+            p.card-text.text-muted.small-font No description
     div.col-sm-5
       div.card
+        - var secondWord = wordMap.get(combination.secondWordId)
+        div.card-header
+          a(href=`/users/${secondWord.createdBy}/mywords`).card-link.word-username #{secondWord.username}
+          span.word-creation-day #{firstWord.formattedCreatedAt}
+          if secondWord.isUpdated
+            span.small-font.text-muted (編集済み)
         div.card-body
-          h5.card-title #{combination.combination[1]}
+          h5.card-title #{secondWord.description}
           hr
-          - var hasDescription = combination.descriptions[1] !== ''
+          - var hasDescription = secondWord.description
           if hasDescription
-            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[1]}
+            p.card-text.text-muted.word-description #{secondWord.description}
           else
-            p(style="font-size: 80%;").card-text.text-muted No description
+            p.card-text.text-muted.small-font No description
   div
     div#comment-error-alert
     textarea(name="comment" placeholder="コメントを入力")
@@ -43,13 +55,13 @@ block content
       - var hasComment = comments.length > 0
       if hasComment
         each comment in comments
-          div(id=`${comment.commentNumber}` style="position: relative; padding-top: 24px;" )
-            a(href=`/users/${comment.createdBy}/mywords`, style="font-size: 80%; position: absolute; top: 0px; left: 0px;") #{comment.user.username}
-            div(style="font-size: 80%; position: absolute; top: 0px; right: 0px;") #{comment.formattedCreatedAt}
-            div(style="width: 95%; white-space: pre-wrap; margin-top: 10px;") #{comment.comment}
+          div(id=`${comment.commentNumber}`).comment-container
+            a(href=`/users/${comment.createdBy}/mywords`).comment-username #{comment.user.username}
+            span.comment-creation-day #{comment.formattedCreatedAt}
+            div.comment #{comment.comment}
             - var isMine = parseInt(user.id) === comment.createdBy
             if isMine
-              button(style="position: absolute; top: 34px; right: 0px"
+              button(
                 data-combination-id=comment.combinationId
                 data-comment-number=comment.commentNumber).comment-delete-button.btn.btn-outline-secondary.btn-sm 削除
             hr
