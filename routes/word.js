@@ -65,18 +65,31 @@ router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
   Word.findById(req.params.wordId).then((word) => {
     if (isMine(req, word)) {
       if (parseInt(req.query.edit) === 1) {
-        const updatedAt = new Date();
         word.update({
-          wordId: word.wordId,
-          word: word.word,
           description: req.body.description,
-          createdBy: req.user.id,
-          updatedAt: updatedAt
         }).then(() => {
           //組み合わせの説明も更新
-          return updateDescriptionOfCombination(word, 'first');
+          return Combination.findAll({
+            where: { firstWordId: word.wordId },
+            order: [['"combinationId"', 'DESC']]
+          }).then((combinations) => {
+            return Promise.all(combinations.map((c) => {
+              c.update({
+                descriptions: [word.description, c.descriptions[1]]
+              });
+            }));
+          });
         }).then(() => {
-          return updateDescriptionOfCombination(word, 'second');
+          return Combination.findAll({
+            where: { secondWordId: word.wordId },
+            order: [['"combinationId"', 'DESC']]
+          }).then((combinations) => {
+            return Promise.all(combinations.map((c) => {
+              c.update({
+                descriptions: [c.descriptions[0], word.description]
+              });
+            }));
+          });
         }).then(() => {
           res.redirect(`/users/${req.user.id}/mywords`);
         });
@@ -94,7 +107,7 @@ router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
         }).then((combinations) => {
           return storedCombinations.concat(combinations.filter(c => c.favoriteCounter === 0 && c.commentCounter === 0));
         }).then((deleteCombinations) => {
-          return Promise.all(deleteCombinations.map(d => d.destroy()));
+          return Promise.all(deleteCombinations.map(dc => dc.destroy()));
         }).then(() => {
           return word.destroy();
         }).then(() => {
@@ -112,46 +125,6 @@ router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
     }
   });
 });
-
-const updateDescriptionOfCombination = (wordObj, firstOrSecond) => {
-  return new Promise((resolve) => {
-    if (firstOrSecond === 'first') {
-      Combination.findAll({
-        where: { firstWordId: wordObj.wordId },
-        order: [['"combinationId"', 'DESC']]
-      }).then((combinations) => {
-        return Promise.all(combinations.map((c) => {
-          c.update({ //returnなしでも大丈夫か確かめる
-            combinationId: c.combinationId,
-            combination: c.combination,
-            descriptions: [wordObj.description, c.descriptions[1]],
-            firstWordId: c.firstWordId,
-            secondWordId: c.secondWordId
-          });
-        }));
-      }).then(() => {
-        resolve();
-      });
-    } else if (firstOrSecond === 'second') {
-      Combination.findAll({
-        where: { secondWordId: wordObj.wordId },
-        order: [['"combinationId"', 'DESC']]
-      }).then((combinations) => {
-        return Promise.all(combinations.map((c) => {
-          c.update({ //returnなしでも大丈夫か確かめる
-            combinationId: c.combinationId,
-            combination: c.combination,
-            descriptions: [c.descriptions[0], wordObj.description],
-            firstWordId: c.firstWordId,
-            secondWordId: c.secondWordId
-          });
-        }));
-      }).then(() => {
-        resolve();
-      });
-    }
-  });
-};
 
 module.exports = router;
 

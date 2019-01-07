@@ -12,24 +12,36 @@ block content
       span.favorite-counter #{combination.favoriteCounter}
     div.col-sm-5
       div.card
+        - var firstWord = wordMap.get(combination.firstWordId)
+        div.card-header
+          a(href=`/users/${firstWord.createdBy}/mywords`).card-link.word-username #{firstWord.username}
+          span.word-creation-day #{firstWord.formattedCreatedAt}
+          if firstWord.isUpdated
+            span.small-font.text-muted (編集済)
         div.card-body
-          h5.card-title #{combination.combination[0]}
+          h5.card-title #{firstWord.word}
           hr
-          - var hasDescription = combination.descriptions[0] !== ''
+          - var hasDescription = firstWord.description
           if hasDescription
-            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[0]}
+            p.card-text.text-muted.word-description #{firstWord.description}
           else
-            p(style="font-size: 80%;").card-text.text-muted No description
+            p.card-text.text-muted.small-font No description
     div.col-sm-5
       div.card
+        - var secondWord = wordMap.get(combination.secondWordId)
+        div.card-header
+          a(href=`/users/${secondWord.createdBy}/mywords`).card-link.word-username #{secondWord.username}
+          span.word-creation-day #{firstWord.formattedCreatedAt}
+          if secondWord.isUpdated
+            span.small-font.text-muted (編集済み)
         div.card-body
-          h5.card-title #{combination.combination[1]}
+          h5.card-title #{secondWord.description}
           hr
-          - var hasDescription = combination.descriptions[1] !== ''
+          - var hasDescription = secondWord.description
           if hasDescription
-            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[1]}
+            p.card-text.text-muted.word-description #{secondWord.description}
           else
-            p(style="font-size: 80%;").card-text.text-muted No description
+            p.card-text.text-muted.small-font No description
   div
     div#comment-error-alert
     textarea(name="comment" placeholder="コメントを入力")

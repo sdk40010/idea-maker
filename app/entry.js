@@ -18,11 +18,6 @@ $('.favorite-button').each((i, e) => {
         const favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
         favoriteButton.text(favoriteLabels[data.favorite]);
         favoriteCounter.text(data.favoriteCounter);
-        if (data.favorite === 0) {
-          alert('お気に入りから削除しました');
-        } else if (data.favorite === 1) {
-          alert('お気に入りに追加しました');
-        }
       }
     );
   });
@@ -55,12 +50,12 @@ const getCommentHtml = (commentObj) => {
     <a href="/users/${commentObj.createdBy}/mywords" style="font-size: 80%; position: absolute; top: 0px; left: 0px;">${commentObj.user.username}</a>
     <div style="font-size: 80%; position: absolute; top: 0px; right: 0px;">${commentObj.formattedCreatedAt}</div>
     <div style="width: 95%; white-space: pre-wrap; margin-top: 10px;">${commentObj.comment}</div>
-    <button style="position: absolute; top: 34px; right: 0px; " class="btn btn-outline-danger btn-sm delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}">削除</button> 
+    <button style="position: absolute; top: 34px; right: 0px; " class="btn btn-outline-secondary btn-sm comment-delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}">削除</button> 
     <hr>
   </div>`;
 };
 
-$('#comment-area').on('click', '.delete-button', function() {
+$('#comment-area').on('click', '.comment-delete-button', function() {
   if (confirm('コメントを削除しますか？')) {
     const combinationId = $(this).attr('data-combination-id');
     const commentNumber = $(this).attr('data-comment-number');
@@ -68,14 +63,8 @@ $('#comment-area').on('click', '.delete-button', function() {
 
     $.post(`/combinations/${combinationId}/comments/${commentNumber}?delete=1`, null,
       (data) => {
-        if (data.status === 'OK') {
-          $(`#${commentNumber}`).remove();
-          commentCounter.text(`${data.commentCounter}件のコメント`);
-        } else if (data.status === 'Bad request') {
-          //アラートを表示させる
-        } else if (data.status === 'Not found') {
-          //同様
-        }
+        $(`#${commentNumber}`).remove();
+        commentCounter.text(`${data.commentCounter}件のコメント`);
       }
     );
   }

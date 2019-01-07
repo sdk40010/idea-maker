@@ -53,7 +53,7 @@ router.post('/:combinationId/comments/:commentNumber', authenticationEnsurer, (r
   Comment.findOne({
     where: { combinationId: combinationId, commentNumber: commentNumber }
   }).then((comment) => {
-    return new Promise((resolve) => { //resolveはelseの中にも入れる？
+    return new Promise((resolve) => {
       if (isMine(req, comment)) {
         if (parseInt(req.query.delete) === 1) {
           comment.destroy().then(() => {
@@ -63,13 +63,11 @@ router.post('/:combinationId/comments/:commentNumber', authenticationEnsurer, (r
           const err = new Error('不正なリクエストです');
           err.status = 400;
           next(err);
-          res.json({ status: 'Bad Request' });
         }
       } else {
         const err = new Error('指定されたコメントがない、または、編集する権限がありません');
         err.status = 404;
         next(err);
-        res.json({ status: 'Not Found' });
       }
     });
   }).then(() => {

@@ -1,8 +1,28 @@
-body {
+/* body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+} */
+
+.small-font{
+  font-size: 80%;
+}
+
+
+.word-username {
+  font-size: 80%;
+  margin-right: 10px;
+}
+
+.word-creation-day {
+  font-size: 80%;
+  margin-right: 10px;
+}
+
+.word-description {
+  font-size: 80%;
+  white-space: pre-wrap;
 }

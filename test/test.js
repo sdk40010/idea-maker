@@ -158,6 +158,7 @@ describe('/users/:userId/combinations/:combinationId', () => {
             }).then((favorites) => {
               assert.equal(favorites.length, 1);
               assert.equal(favorites[0].favorite, 1);
+              //テストで作成したものを削除
               return Word.findAll({ where: { createdBy: userId }});
             }).then((words) => {
               return Promise.all(words.map(word => deleteWordAggregate(word)));
@@ -167,8 +168,6 @@ describe('/users/:userId/combinations/:combinationId', () => {
             });
           });
       });
-      
-      
     });
   });
 });
@@ -510,6 +509,144 @@ describe('/words/:wordId?delete=1', () => {
   });
 });
 
+describe('/users/:userId/mywords', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('自分が投稿一覧が表示できる', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+     //投稿を二つ作成
+      const promiseTwoWords = new Promise((resolve) => {
+        request(app)
+          .post('/words')
+          .send({ word: '投稿一覧ワード1', description: '投稿一覧説明1' })
+          .expect('Location', /\//)
+          .expect(302)
+          .end((err, res) => {
+            request(app)
+              .post('/words')
+              .send({ word: '投稿一覧ワード2', description: '投稿一覧説明2' })
+              .expect('Location', /\//)
+              .expect(302)
+              .end((err, res) => {
+                if (err) done(err);
+                resolve();
+              });
+          });
+      });
+
+      //自分の投稿一覧ページに投稿した単語が表示されているか確認
+      const userId = 0;
+      promiseTwoWords.then(() => {
+        request(app)
+          .get(`/users/${userId}/mywords`)
+          .expect(/投稿一覧ワード1/)
+          .expect(/投稿一覧説明1/)
+          .expect(/投稿一覧ワード2/)
+          .expect(/投稿一覧説明2/)
+          .expect(200)
+          .end((err, res) => {
+            Word.findAll({
+              where: { createdBy: userId }
+            }).then((words) => {
+              return Promise.all(words.map(word => deleteWordAggregate(word)));
+            }).then(() => {
+              if (err) return done();
+              done();
+            });
+          });
+      });
+    });
+  });
+});
+
+describe('/users/:userId/favorites', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('自分のお気に入り一覧が表示される', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      //投稿を二つ作成
+      const promiseTwoWords = new Promise((resolve) => {
+        request(app)
+          .post('/words')
+          .send({ word: 'お気に入り一覧ワード1', description: 'お気に入り一覧説明1' })
+          .expect('Location', /\//)
+          .expect(302)
+          .end((err, res) => {
+            request(app)
+              .post('/words')
+              .send({ word: 'お気に入り一覧ワード2', description: 'お気に入り一覧説明2' })
+              .expect('Location', /\//)
+              .expect(302)
+              .end((err, res) => {
+                if (err) done(err);
+                resolve();
+              });
+          });
+      });
+
+      const userId = 0;
+      const promiseFavorite = promiseTwoWords.then(() => {
+        return Word.findOne({
+          where: { createdBy: userId },
+          order: [['"wordId"', 'DESC']]
+        });
+      }).then((word) => {
+        return Combination.findOne({
+          where: { firstWordId: word.wordId },
+          order: [['"combinationId"', 'DESC']]
+        });
+      }).then((combination) => {
+        return new Promise((resolve) => {
+          request(app)
+            .post(`/users/${userId}/combinations/${combination.combinationId}`)
+            .send({ favorite: 1 })
+            .expect('{"status":"OK","favorite":1,"favoriteCounter":1}')
+            .end((err, res) => {
+              if (err) done(err);
+              resolve();
+            });
+        });
+      });
+
+      promiseFavorite.then(() => {
+        request(app)
+          .get(`/users/${userId}/favorites`)
+          .expect(/お気に入り一覧ワード1/)
+          .expect(/お気に入り一覧説明1/)
+          .expect(/お気に入り一覧ワード2/)
+          .expect(/お気に入り一覧説明2/)
+          .expect(200)
+          .end((err, res) => {
+            Word.findAll({
+              where: { createdBy: userId }
+            }).then((words) => {
+              return Promise.all(words.map(word => deleteWordAggregate(word)));
+            }).then(() => {
+              if (err) return done(err);
+              done();
+            });
+          });
+      });
+    });
+  });
+});
+
 
 
 const deleteWordAggregate = (wordObj) => {
@@ -520,20 +657,20 @@ const deleteWordAggregate = (wordObj) => {
     storedCombinations = combinations;
     //コメントの削除
     const promises = combinations.map((combination) => {
-      Comment.findAll({
+      return Comment.findAll({
         where: { combinationId: combination.combinationId }
       }).then((comments) => {
-        return Promise.all(comments.map(comment => { comment.destroy() }));
+        return Promise.all(comments.map(comment => comment.destroy()));
       });
     });
     return Promise.all(promises);
   }).then(() => {
     //お気に入りの削除
     const promises = storedCombinations.map((combination) => {
-      Favorite.findAll({
+      return Favorite.findAll({
         where: { combinationId: combination.combinationId }
       }).then((favorites) => {
-        return Promise.all(favorites.map(favorite => { favorite.destroy() }));
+        return Promise.all(favorites.map(favorite => favorite.destroy()));
       });
     });
     return Promise.all(promises);
