@@ -58,7 +58,7 @@ var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var wordsRouter = require('./routes/word');
 var favoritesRouter = require('./routes/favorite');
-var combinationsRouter = require('./routes/combinaton');
+var combinationsRouter = require('./routes/combination');
 var commentsRouter = require('./routes/comment');
 var usersRouter = require('./routes/user');
 

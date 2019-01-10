@@ -9,14 +9,6 @@ const Combination = loader.database.define('combinations', {
     autoIncrement: true,
     allowNull: false
   },
-  combination: {
-    type: Sequelize.ARRAY(Sequelize.STRING(20)),
-    allowNull: false
-  },
-  descriptions: {
-    type: Sequelize.ARRAY(Sequelize.TEXT),
-    allowNull: false
-  },
   favoriteCounter: {
     type: Sequelize.INTEGER,
     allowNull: false,

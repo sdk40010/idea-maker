@@ -9,14 +9,16 @@ $('.favorite-button').each((i, e) => {
     const combinationId = favoriteButton.attr('data-combination-id');
     const favorite = parseInt(favoriteButton.attr('data-favorite'));
     const nextFavorite = (favorite + 1) % 2;
+    const favoriteIcon = $($('.favorite-icon')[i]);
     const favoriteCounter = $($('.favorite-counter')[i]);
     
     $.post(`/users/${userId}/combinations/${combinationId}`,
       { favorite: nextFavorite },
       (data) => {
         favoriteButton.attr('data-favorite', data.favorite);
-        const favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
-        favoriteButton.text(favoriteLabels[data.favorite]);
+        const favoriteIconColor = ['md-dark', 'favorite-icon-pink'];
+        favoriteIcon.removeClass('md-dark favorite-icon-pink');
+        favoriteIcon.addClass(favoriteIconColor[data.favorite]);
         favoriteCounter.text(data.favoriteCounter);
       }
     );

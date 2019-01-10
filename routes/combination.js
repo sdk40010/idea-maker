@@ -24,7 +24,7 @@ router.get('/:combinationId', authenticationEnsurer, (req, res, next) => {
       include: [
         {
           model: User,
-          attributes: ['username'] //usernameだけで大丈夫か確認
+          attributes: ['username']
         }
       ],
       where: { combinationId: req.params.combinationId },

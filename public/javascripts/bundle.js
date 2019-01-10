@@ -105,13 +105,15 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-button').each(function 
     var combinationId = favoriteButton.attr('data-combination-id');
     var favorite = parseInt(favoriteButton.attr('data-favorite'));
     var nextFavorite = (favorite + 1) % 2;
+    var favoriteIcon = jquery__WEBPACK_IMPORTED_MODULE_0___default()(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-icon')[i]);
     var favoriteCounter = jquery__WEBPACK_IMPORTED_MODULE_0___default()(jquery__WEBPACK_IMPORTED_MODULE_0___default()('.favorite-counter')[i]);
     jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post("/users/".concat(userId, "/combinations/").concat(combinationId), {
       favorite: nextFavorite
     }, function (data) {
       favoriteButton.attr('data-favorite', data.favorite);
-      var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除'];
-      favoriteButton.text(favoriteLabels[data.favorite]);
+      var favoriteIconColor = ['md-dark', 'favorite-icon-pink'];
+      favoriteIcon.removeClass('md-dark favorite-icon-pink');
+      favoriteIcon.addClass(favoriteIconColor[data.favorite]);
       favoriteCounter.text(data.favoriteCounter);
     });
   });

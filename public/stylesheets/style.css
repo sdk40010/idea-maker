@@ -10,50 +10,90 @@ a {
 .small-font{
   font-size: 80%;
 }
-
-
 .word-username {
   font-size: 80%;
   margin-right: 10px;
 }
-
 .word-creation-day {
   font-size: 80%;
   margin-right: 10px;
 }
-
 .word-description {
   font-size: 80%;
   white-space: pre-wrap;
 }
-
 .comment-container{
   position: relative;
   padding-top: 24px;
 }
-
 .comment-username{
   font-size: 80%;
   position: absolute;
   top: 0px;
   left: 0px;
 }
-
 .comment-creation-day{
   font-size: 80%;
   position: absolute;
   top: 0px;
   right: 0px;
 }
-
 .comment{
   width: 95%;
   white-space: pre-wrap;
   margin-top: 10px;
 }
-
 .comment-delete-button{
   position: absolute;
   top: 34px;
   right: 0px;
+}
+.word-edit-button{
+  margin-right: 50px;
+}
+.favorite-action{
+  margin-bottom: 1rem;
+}
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+.material-icons.reverse{
+  transform: scale(-1, 1);
+}
+.favorite-button{
+  display: inline-block;
+  background-color: #ffffff; 
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+}
+.favorite-button:hover{
+background: #eff0f1;
+}
+.favorite-icon{
+  padding: 7px;
+}
+.favorite-icon-pink{
+  color: #EA3F60;
+}
+.jamp-to-comment-button{
+  display: inline-block;
+  background-color: #ffffff;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+}
+.jamp-to-comment-button:hover{
+  background: #eff0f1;
+}
+.comment-icon{
+  padding: 7px;
 }

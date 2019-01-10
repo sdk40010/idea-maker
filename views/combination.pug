@@ -4,12 +4,14 @@ block content
   div.row
     div.col-sm-2
       - var favorite = favoriteInfo
-      - var favoriteLabels = ['お気に入りに追加','お気に入りから削除']
-      button(
-        data-user-id=user.id
-        data-combination-id=combination.combinationId
-        data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
-      span.favorite-counter #{combination.favoriteCounter}
+      - var favoriteIconColor = ['md-dark', 'favorite-icon-pink']
+      div.favorite-action
+        div(
+          data-user-id=user.id
+          data-combination-id=combination.combinationId
+          data-favorite=favorite).favorite-button
+          i(class=`material-icons md-36 favorite-icon ${favoriteIconColor[favorite]}`) favorite_border
+        span.favorite-counter #{combination.favoriteCounter}
     div.col-sm-5
       div.card
         - var firstWord = wordMap.get(combination.firstWordId)
@@ -35,7 +37,7 @@ block content
           if secondWord.isUpdated
             span.small-font.text-muted (編集済み)
         div.card-body
-          h5.card-title #{secondWord.description}
+          h5.card-title #{secondWord.word}
           hr
           - var hasDescription = secondWord.description
           if hasDescription

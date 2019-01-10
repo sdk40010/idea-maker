@@ -8,33 +8,56 @@ block content
       div.row
         div.col-sm-2
           - var favorite = favoriteMap.get(combination.combinationId)
-          - var favoriteLabels = ['お気に入りに追加', 'お気に入りから削除']
-          button(
-            data-user-id=user.id
-            data-combination-id=combination.combinationId
-            data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
-          span #{combination.favoriteCounter}
-          a(href=`/combinations/${combination.combinationId}` style="display:block;") コメントする
-          span #{combination.commentCounter}件
+          - var favoriteIconColor = ['md-dark', 'favorite-icon-pink']
+          //- button(
+          //-   data-user-id=user.id
+          //-   data-combination-id=combination.combinationId
+          //-   data-favorite=favorite).favorite-button #{favoriteLabels[favorite]}
+          //- span.favorite-counter #{combination.favoriteCounter}
+          //- a(href=`/combinations/${combination.combinationId}` style="display:block;") コメントする
+          //- span #{combination.commentCounter}件
+          div.favorite-action
+            div(
+              data-user-id=user.id
+              data-combination-id=combination.combinationId
+              data-favorite=favorite).favorite-button
+              i(class=`material-icons md-36 favorite-icon ${favoriteIconColor[favorite]}`) favorite_border
+            span.favorite-counter #{combination.favoriteCounter}
+          div.comment-action
+            a(href=`/combinations/${combination.combinationId}`)
+              i.material-icons.md-36.md-dark.reverse.comment-icon chat_bubble_outline
+            span #{combination.commentCounter}件
         div.col-sm-5
           div.card
+            - var firstWord = wordMap.get(combination.firstWordId)
+            div.card-header
+              a(href=`/users/${firstWord.createdBy}/mywords`).word-username #{firstWord.username}
+              span.word-creation-day #{firstWord.formattedCreatedAt}
+              if firstWord.isUpdated
+                span.small-font.text-muted (編集済)
             div.card-body
-              h5.card-title #{combination.combination[0]}
+              h5.card-title #{firstWord.word}
               hr
-              - var hasDescription = combination.descriptions[0]
+              - var hasDescription = firstWord.description
               if hasDescription
-                p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[0]}
+                p.card-text.text-muted.word-description #{firstWord.description}
               else
-                p(style="font-size: 80%;").card-text.text-muted No description
+                p.card-text.text-muted.small-font No description
         div.col-sm-5
           div.card
+            - var secondWord = wordMap.get(combination.secondWordId)
+            div.card-header
+              a(href=`/users/${secondWord.createdBy}/mywords`).word-username #{secondWord.username}
+              span.word-creation-day #{secondWord.formattedCreatedAt}
+              if secondWord.isUpdated
+                span.small-font.text-muted (編集済)
             div.card-body
-              h5.card-title #{combination.combination[1]}
+              h5.card-title #{secondWord.word}
               hr
-              - var hasDescription = combination.descriptions[1]
+              - var hasDescription = secondWord.description
               if hasDescription
-                p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{combination.descriptions[1]}
+                p.card-text.text-muted.word-description #{secondWord.description}
               else
-                p(style="font-size: 80%;").card-text.text-muted No description
+                p.card-text.text-muted.small-font No description
 
     

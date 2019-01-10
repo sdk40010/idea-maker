@@ -4,19 +4,24 @@ block content
   h3 投稿一覧
   - var hasMyWord = words.length > 0
     each word in words
-      div.card.w-50.mx-auto
+      div(style="margin-bottom: 20px;").card.w-50.mx-auto
+        div.card-header
+          a(href=`/users/${word.createdBy}/mywords`).card-link.word-username #{word.user.username}
+          span.word-creation-day #{word.formattedCreatedAt}
+          if word.isUpdated
+            span.small-font.text-muted (編集済)
         div.card-body
           h5.card-title #{word.word}
           hr
-          - var hasDescription = word.description !== ""
+          - var hasDescription = word.description
           if hasDescription
-            p(style="font-size: 80%; white-space: pre-wrap;").card-text.text-muted #{word.description}
+            p.card-text.text-muted.word-description #{word.description}
           else
-            p(style="font-size: 80%;").text-muted No description
-          - var isMine = parseInt(user.id) === word.createdBy
-          if isMine
-            hr
-            a(href=`/words/${word.wordId}/edit` style="margin-right: 50px").card-link.btn.btn-outline-primary.btn-sm 編集
+            p.card-text.text-muted.small-font No description
+        - var isMine = parseInt(user.id) === word.createdBy
+        if isMine
+          div.card-footer
+            a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-primary.btn-sm.word-edit-button 編集
             form(method="post" action=`/words/${word.wordId}?delete=1` style="display: inline;")
               button(
                 data-word-id=word.wordId).btn.btn-outline-secondary.btn-sm 削除
