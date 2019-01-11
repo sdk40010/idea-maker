@@ -1,5 +1,8 @@
 'use strict';
 import $ from 'jquery';
+const global = Function('return this;')();
+global.jQuery = $;
+import bootstrap from 'bootstrap';
 import moment from 'moment-timezone';
 
 $('.favorite-button').each((i, e) => {

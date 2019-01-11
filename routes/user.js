@@ -25,8 +25,9 @@ router.get('/:userId/mywords', authenticationEnsurer, (req, res, next) => {
       word.isUpdated = word.createdAt.getTime() < word.updatedAt.getTime();
     });
     res.render('myword', {
-      user: req.user,
-      words: words
+      user: req.user, //閲覧ユーザーの情報
+      words: words,
+      userId: parseInt(userId)　//投稿一覧の持ち主のユーザーID
     });
   });
 });
@@ -36,8 +37,6 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
   let storedCombinations = null;
   let storedFavorites = null;
   let storedWordMap = null;
-  //閲覧するお気に入り一覧と自分のお気に入り情報を照らし合わせるためのお気に入りマップ
-  // const favoriteMap = new Map(); //key: combinationId, value: favorite
   Favorite.findAll({
     where: { userId: userId },
     order: [['"createdAt"', 'DESC']]
@@ -50,28 +49,6 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     storedCombinations = combinations;
     const promises = [];
     combinations.forEach((combination) => {
-      // let value = wordMap.get(combination.firstWordId);
-      // if (!value) {
-      //   Word.findOne({
-      //     include: [
-      //       {
-      //         model: User,
-      //         attributes: ['username']
-      //       }
-      //     ],
-      //     where: { wordId: combination.firstWordId }
-      //   }).then((word) => {
-      //     value = {
-      //       word: word.word,
-      //       description: word.description,
-      //       createdBy: word.createdBy,
-      //       username: word.user.username,
-      //       isUpdated: word.createdAt < word.updatedAt
-      //     };
-      //   });
-      // }
-      // wordMap.set(combination.firstWordId, value);
-
       const p1 = Word.findOne({
         include: [
           {
@@ -111,7 +88,8 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
       storedWordMap = wordMap;
     });
   }).then(() => {
-    const favoriteMap = new Map();
+    //閲覧するお気に入り一覧と自分のお気に入り情報を照らし合わせるためのお気に入りマップ
+    const favoriteMap = new Map(); //key: combinationId, value: favorite
     if (parseInt(req.user.id) === parseInt(userId)) { //自分のお気に入り一覧を見る場合
       storedFavorites.forEach((f) => { favoriteMap.set(f.combinationId, f.favorite); });
       return favoriteMap;
@@ -131,10 +109,11 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     }
   }).then((favoriteMap) => {
     res.render('favorite', {
-      user: req.user,
+      user: req.user, //閲覧ユーザーのユーザー情報
       combinations: storedCombinations,
       wordMap: storedWordMap,
-      favoriteMap: favoriteMap
+      favoriteMap: favoriteMap,
+      userId: parseInt(userId) //お気に入り一覧の持ち主のユーザーID
     });
   });
 });

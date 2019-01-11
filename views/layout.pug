@@ -12,16 +12,22 @@ html
     link(rel="stylesheet", href="/stylesheets/style.css")
     link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
   body
-    nav.navbar.navbar-light.bg-light
-      div.navbar-header
-        a(href="/").navbar-brand.nav-link オリジナルアプリ（仮）
-      ul.navbar-nav
-        if user
-          li.nav-item
-            a(href="/logout").nav-link #{user.username} をログアウト
-        else
-          li.nav-item
-            a(href="/login").nav-link ログイン
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      a(href="/").navbar-brand.nav-link オリジナルアプリ（仮）
+      button(type="button" data-toggle="collapse" data-target="#navbarToggler").navbar-toggler
+        span.navbar-toggler-icon
+      div.collapse.navbar-collapse#navbarToggler
+        ul.navbar-nav.mr-auto
+          if user
+            li.nav-item
+              a(href=`/users/${user.id}/mywords`).nav-link マイページ
+        ul.navbar-nav
+          if user
+            li.nav-item
+              a(href="/logout").nav-link #{user.username} をログアウト
+          else
+            li.nav-item
+              a(href="/login").nav-link ログイン
     div.container
       block content
     script(src="/javascripts/bundle.js")

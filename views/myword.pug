@@ -1,7 +1,11 @@
 extends layout
 
 block content
-  h3 投稿一覧
+  ul.nav.nav-tabs
+    li.nav-item
+      a(href=`/users/${userId}/mywords`).nav-link.active 投稿一覧 
+    li.nav-item
+      a(href=`/users/${userId}/favorites`).nav-link お気に入り一覧
   - var hasMyWord = words.length > 0
     each word in words
       div(style="margin-bottom: 20px;").card.w-50.mx-auto
