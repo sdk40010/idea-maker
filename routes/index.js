@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Word = require('../models/word');
 const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
+const Comment = require('../models/comment');
 const moment = require('moment-timezone');
 
 /* GET home page. */
@@ -11,6 +12,7 @@ router.get('/', (req, res, next) => {
   if (req.user) {
     let storedCombinations = null;
     let storedFavoriteMap = null;
+    let storedWordMap = null;
     Combination.findAll({
       order: [['"combinationId', 'DESC']]
     }).then((combinations) => {
@@ -27,9 +29,9 @@ router.get('/', (req, res, next) => {
         favoriteMap.set(f.combinationId, f.favorite);
       });
       //お気に入り情報がない組み合わせに、お気に入りでないことを表す「0」を設定する
-      storedCombinations.forEach((c) => {
-        const f = favoriteMap.get(c.combinationId) || 0; //デフォルト値は0を利用
-        favoriteMap.set(c.combinationId, f);
+      storedCombinations.forEach((sc) => {
+        const f = favoriteMap.get(sc.combinationId) || 0; //デフォルト値は0を利用
+        favoriteMap.set(sc.combinationId, f);
       });
       storedFavoriteMap = favoriteMap;
     }).then(() => {
@@ -55,13 +57,32 @@ router.get('/', (req, res, next) => {
           isUpdated: word.createdAt.getTime() < word.updatedAt.getTime() //その単語が更新されているか
         });
       });
+      storedWordMap = wordMap;
+      //閲覧ユーザーのコメント情報（どの組み合わせにコメントしているか）を取得する
+      return Comment.findAll({
+        where: { createdBy: req.user.id },
+        order: [['"combinationId"', 'DESC']]
+      });
+    }).then((comments) => {
+      //コメントMap（キー:組み合わせID, 値:コメント情報）を作成する
+      const commentMap = new Map(); //key: combinationId, value: comment
+      comments.forEach((comment) => {
+        const value = commentMap.get(comment.combinationId) || 1; 
+        commentMap.set(comment.combinationId, value);
+      });
+      //コメント情報がない組み合わせに、コメントがないことを示す「0」を設定する
+      storedCombinations.forEach((sc) => {
+        const value = commentMap.get(sc.combinationId) || 0; //デフォルト値は0を利用
+        commentMap.set(sc.combinationId, value);
+      });
       res.render('index', {
         user: req.user,
         combinations: storedCombinations,
         favoriteMap: storedFavoriteMap,
-        wordMap: wordMap
+        wordMap: storedWordMap,
+        commentMap: commentMap
       });
-    });
+    })
   } else {
     res.render('index', { user: req.user });
   }

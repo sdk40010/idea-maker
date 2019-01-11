@@ -52,7 +52,7 @@ commentButton.click(() => {
 const getCommentHtml = (commentObj) => {
   return `
   <div id="${commentObj.commentNumber}" class="comment-container" >
-    <a href="/users/${commentObj.createdBy}/mywords" class="comment-username">${commentObj.user.username}</a>
+    <span class="comment-username">${commentObj.user.username}</span>
     <span class="comment-creation-day">${commentObj.formattedCreatedAt}</span>
     <div class="comment">${commentObj.comment}</div>
     <button class="btn btn-outline-secondary btn-sm comment-delete-button" data-combination-id="${commentObj.combinationId}" data-comment-number="${commentObj.commentNumber}">削除</button> 

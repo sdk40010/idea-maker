@@ -236,7 +236,7 @@ describe('/words/:wordId?edit=1', () => {
   });
 });
 
-describe('combinations/:combinations/comments', () => {
+describe('combinations/:combinationId/comments', () => {
   before(() => {
     passportStub.install(app);
     passportStub.login({ id: 0, username: 'testuser' });

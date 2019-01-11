@@ -3,14 +3,14 @@ extends layout
 block content
   ul.nav.nav-tabs
     li.nav-item
-      a(href=`/users/${userId}/mywords`).nav-link.active 投稿一覧 
+      a(href=`/users/${user.id}/mywords`).nav-link.active 投稿一覧 
     li.nav-item
-      a(href=`/users/${userId}/favorites`).nav-link お気に入り一覧
+      a(href=`/users/${user.id}/favorites`).nav-link お気に入り一覧
   - var hasMyWord = words.length > 0
     each word in words
       div(style="margin-bottom: 20px;").card.w-50.mx-auto
         div.card-header
-          a(href=`/users/${word.createdBy}/mywords`).card-link.word-username #{word.user.username}
+          span.word-username #{word.user.username}
           span.word-creation-day #{word.formattedCreatedAt}
           if word.isUpdated
             span.small-font.text-muted (編集済)
@@ -22,10 +22,8 @@ block content
             p.card-text.text-muted.word-description #{word.description}
           else
             p.card-text.text-muted.small-font No description
-        - var isMine = parseInt(user.id) === word.createdBy
-        if isMine
-          div.card-footer
-            a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-primary.btn-sm.word-edit-button 編集
-            form(method="post" action=`/words/${word.wordId}?delete=1` style="display: inline;")
-              button(
-                data-word-id=word.wordId).btn.btn-outline-secondary.btn-sm 削除
+        div.card-footer
+          a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-primary.btn-sm.word-edit-button 編集
+          form(method="post" action=`/words/${word.wordId}?delete=1` style="display: inline;")
+            button(
+              data-word-id=word.wordId).btn.btn-outline-secondary.btn-sm 削除

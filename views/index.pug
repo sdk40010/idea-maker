@@ -24,15 +24,17 @@ block content
                 data-favorite=favorite).favorite-button
                 i(class=`material-icons md-36 favorite-icon ${favoriteIconColor[favorite]}` ) favorite_border
               span.favorite-counter #{combination.favoriteCounter}
+            - var comment = commentMap.get(combination.combinationId)
+            - var commentIconColor = ['md-dark', 'favorite-icon-green']
             div.comment-action 
               a(href=`/combinations/${combination.combinationId}`).jamp-to-comment-button
-                i.material-icons.md-36.md-dark.reverse.comment-icon chat_bubble_outline
+                i(class=`material-icons md-36 reverse comment-icon ${commentIconColor[comment]}`) chat_bubble_outline
               span #{combination.commentCounter}件   
           div.col-sm-5
             div.card
               - var firstWord = wordMap.get(combination.firstWordId)
               div.card-header
-                a(href=`/users/${firstWord.createdBy}/mywords`).card-link.word-username #{firstWord.username}
+                span.word-username #{firstWord.username}
                 span.word-creation-day #{firstWord.formattedCreatedAt}
                 if firstWord.isUpdated 
                  span.small-font.text-muted (編集済)
@@ -48,7 +50,7 @@ block content
             div.card
               - var secondWord = wordMap.get(combination.secondWordId)
               div.card-header
-                a(href=`/users/${secondWord.createdBy}/mywords`).card-link.word-username #{secondWord.username}
+                span.word-username #{secondWord.username}
                 span.word-creation-day #{secondWord.formattedCreatedAt}
                 if secondWord.isUpdated
                   span.small-font.text-muted (編集済)

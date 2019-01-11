@@ -16,7 +16,7 @@ block content
       div.card
         - var firstWord = wordMap.get(combination.firstWordId)
         div.card-header
-          a(href=`/users/${firstWord.createdBy}/mywords`).card-link.word-username #{firstWord.username}
+          span.word-username #{firstWord.username}
           span.word-creation-day #{firstWord.formattedCreatedAt}
           if firstWord.isUpdated
             span.small-font.text-muted (編集済)
@@ -32,7 +32,7 @@ block content
       div.card
         - var secondWord = wordMap.get(combination.secondWordId)
         div.card-header
-          a(href=`/users/${secondWord.createdBy}/mywords`).card-link.word-username #{secondWord.username}
+          span.word-username #{secondWord.username}
           span.word-creation-day #{firstWord.formattedCreatedAt}
           if secondWord.isUpdated
             span.small-font.text-muted (編集済み)
@@ -58,7 +58,7 @@ block content
       if hasComment
         each comment in comments
           div(id=`${comment.commentNumber}`).comment-container
-            a(href=`/users/${comment.createdBy}/mywords`).comment-username #{comment.user.username}
+            span.comment-username #{comment.user.username}
             span.comment-creation-day #{comment.formattedCreatedAt}
             div.comment #{comment.comment}
             - var isMine = parseInt(user.id) === comment.createdBy
