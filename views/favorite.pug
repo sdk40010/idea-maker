@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  ul.nav.nav-tabs
+  ul.nav.nav-tabs.my-3
     li.nav-item
       a(href=`/users/${user.id}/mywords`).nav-link 投稿一覧
     li.nav-item
@@ -9,7 +9,7 @@ block content
   - var hasFavorite = combinations.length > 0
   if hasFavorite
     each combination in combinations
-      div.row
+      div.row.mb-3
         div.col-sm-2
           - var favorite = favoriteMap.get(combination.combinationId)
           - var favoriteIconColor = ['md-dark', 'favorite-icon-pink']

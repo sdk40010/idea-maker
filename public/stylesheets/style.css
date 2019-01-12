@@ -8,7 +8,10 @@ a {
 } */
 
 .small-font{
-  font-size: 80%;
+  font-size: 0.8rem;
+}
+.large-font{
+  font-size: 1.25rem;
 }
 .word-username {
   font-size: 80%;

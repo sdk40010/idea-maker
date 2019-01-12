@@ -1,14 +1,14 @@
 extends layout
 
 block content
-  ul.nav.nav-tabs
+  ul.nav.nav-tabs.my-3
     li.nav-item
       a(href=`/users/${user.id}/mywords`).nav-link.active 投稿一覧 
     li.nav-item
       a(href=`/users/${user.id}/favorites`).nav-link お気に入り一覧
   - var hasMyWord = words.length > 0
     each word in words
-      div(style="margin-bottom: 20px;").card.w-50.mx-auto
+      div.card.w-50.mx-auto.mb-3
         div.card-header
           span.word-username #{word.user.username}
           span.word-creation-day #{word.formattedCreatedAt}

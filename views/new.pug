@@ -1,11 +1,13 @@
 extends layout
 
 block content
-  form(method="post", action="/words")
-    div
-      h5 キーワード
-      input(type="text", name="word")
-    div
-      h5 説明
-      textarea(name="description")
-    button(type="submit") 投稿する
+  form(method="post", action="/words").my-3
+    div.form-group
+      label(for="word") キーワード
+      span.small-font.text-muted （20文字以内）
+      input(type="text", name="word" maxlength="20")#word.form-control
+    div.form-group
+      label(for="description") 説明
+      span.small-font.text-muted （説明の記入は任意です）
+      textarea(name="description" rows="4")#description.form-control
+    button(type="submit").btn.btn-info 投稿する

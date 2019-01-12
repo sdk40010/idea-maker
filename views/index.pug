@@ -4,16 +4,12 @@ block content
   p.my-3 Welcome to オリジナルアプリ（仮）
   if user
     div
-      a(href=`/users/${user.id}/mywords`) 自分の投稿一覧
-    div
-      a(href=`/users/${user.id}/favorites`) 自分のお気に入り一覧
-    div
-      a(href="/words/new") 投稿を作成する
+      a(href="/words/new").btn.btn-info 投稿を作成する
     - var hasCombination = combinations.length > 0
     if hasCombination
-      h3 組み合わせ一覧
+      h3.my-3 組み合わせ一覧
       each combination in combinations
-        div.row
+        div.row.mb-3
           div.col-sm-2
             - var favorite = favoriteMap.get(combination.combinationId)
             - var favoriteIconColor = ['md-dark', 'favorite-icon-pink']
@@ -21,12 +17,12 @@ block content
               div(
                 data-user-id=user.id
                 data-combination-id=combination.combinationId
-                data-favorite=favorite).favorite-button
+                data-favorite=favorite).favorite-button.mx-auto
                 i(class=`material-icons md-36 favorite-icon ${favoriteIconColor[favorite]}` ) favorite_border
               span.favorite-counter #{combination.favoriteCounter}
             - var comment = commentMap.get(combination.combinationId)
             - var commentIconColor = ['md-dark', 'favorite-icon-green']
-            div.comment-action 
+            div.comment-action
               a(href=`/combinations/${combination.combinationId}`).jamp-to-comment-button
                 i(class=`material-icons md-36 reverse comment-icon ${commentIconColor[comment]}`) chat_bubble_outline
               span #{combination.commentCounter}件   

@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  div.row
+  div.row.mt-3
     div.col-sm-2
       - var favorite = favoriteInfo
       - var favoriteIconColor = ['md-dark', 'favorite-icon-pink']
@@ -44,11 +44,11 @@ block content
             p.card-text.text-muted.word-description #{secondWord.description}
           else
             p.card-text.text-muted.small-font No description
-  div
-    div#comment-error-alert
-    textarea(name="comment" placeholder="コメントを入力")
+  div.my-3
+    div.form-group
+      textarea(name="comment" placeholder="コメントを入力" rows="4").form-control
     button(
-      data-combination-id=combination.combinationId)#comment-button 送信
+      data-combination-id=combination.combinationId)#comment-button.btn.btn-info 送信
   div
     h3 コメント
     p.comment-counter #{combination.commentCounter}件のコメント

@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  h3 説明の編集
+  h3.my-3 説明の編集
   form(method="post", action=`/words/${word.wordId}?edit=1`)
+    div.form-group
+      label キーワード
+      p.large-font #{word.word}
+    div.form-group
+      label(for="description") 説明
+      textarea(name="description").form-control #{word.description}
     div
-      h5 キーワード
-      p #{word.word}
-    div
-      h5 説明
-      textarea(name="description") #{word.description}
-    div
-      button(type="submit") 完了
+      button(type="submit").btn.btn-info 完了
