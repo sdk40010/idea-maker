@@ -7,6 +7,7 @@ block content
     li.nav-item
       a(href=`/users/${user.id}/favorites`).nav-link お気に入り一覧
   - var hasMyWord = words.length > 0
+  if hasMyWord
     each word in words
       div.card.w-50.mx-auto.mb-3
         div.card-header
@@ -23,7 +24,12 @@ block content
           else
             p.card-text.text-muted.small-font No description
         div.card-footer
-          a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-primary.btn-sm.word-edit-button 編集
+          a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-main-color.btn-sm.word-edit-button 編集
           form(method="post" action=`/words/${word.wordId}?delete=1` style="display: inline;")
             button(
               data-word-id=word.wordId).btn.btn-outline-secondary.btn-sm 削除
+  else
+    div.empty-message-container
+      p まだ投稿がありません
+      div
+          a(href="/words/new").btn.btn-main-color 投稿を作成する

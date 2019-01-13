@@ -3,10 +3,10 @@ extends layout
 block content
   p.my-3 Welcome to オリジナルアプリ（仮）
   if user
-    div
-      a(href="/words/new").btn.btn-info 投稿を作成する
     - var hasCombination = combinations.length > 0
     if hasCombination
+      div
+        a(href="/words/new").btn.btn-main-color 投稿を作成する
       h3.my-3 組み合わせ一覧
       each combination in combinations
         div.row.mb-3
@@ -58,6 +58,11 @@ block content
                   p.card-text.text-muted.word-description #{secondWord.description}
                 else
                   p.card-text.text-muted.small-font No description
+    else
+      div.empty-message-container
+        p まだ組み合わせがありません
+        div
+          a(href="/words/new").btn.btn-main-color 投稿を作成する
   
 
 

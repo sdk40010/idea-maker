@@ -41,9 +41,7 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
 
 router.get('/:wordId/edit', authenticationEnsurer, (req, res, next) => {
   const wordId = req.params.wordId;
-  Word.findOne({
-    where: { wordId: wordId }
-  }).then((word) => {
+  Word.findById(wordId).then((word) => {
     if (isMine(req, word)) { //作成者のみが編集フォームを開ける
       res.render('edit', {
         user: req.user,

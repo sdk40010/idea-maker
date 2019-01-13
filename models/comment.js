@@ -27,7 +27,12 @@ const Comment = loader.database.define('comments', {
   }
 }, {
     freezeTableName: true,
-    timestamps: false
+    timestamps: false,
+    indexes: [
+      {
+        fields: ['createdBy']
+      }
+    ]
   });
 
 module.exports = Comment;

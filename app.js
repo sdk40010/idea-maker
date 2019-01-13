@@ -17,7 +17,6 @@ User.sync().then(() => {
   Combination.sync();
   Word.belongsTo(User, { foreignKey: 'createdBy' });
   Word.sync();
-  Favorite.belongsTo(User, { foreignKey: 'userId' });
   Favorite.sync();
   Comment.belongsTo(User, { foreignKey: 'createdBy' });
   Comment.sync();
