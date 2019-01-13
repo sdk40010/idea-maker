@@ -1,13 +1,12 @@
 extends layout
 
 block content
-  p.my-3 Welcome to オリジナルアプリ（仮）
   if user
     - var hasCombination = combinations.length > 0
     if hasCombination
       div
-        a(href="/words/new").btn.btn-main-color 投稿を作成する
-      h3.my-3 組み合わせ一覧
+        a(href="/words/new").btn.btn-main-color.my-3 投稿を作成する
+      h3.mb-3 組み合わせ一覧
       each combination in combinations
         div.row.mb-3
           div.col-sm-2
@@ -59,10 +58,12 @@ block content
                 else
                   p.card-text.text-muted.small-font No description
     else
-      div.empty-message-container
+      div.empty-message-container.mt-3
         p まだ組み合わせがありません
         div
           a(href="/words/new").btn.btn-main-color 投稿を作成する
+  else
+    p.my-3 Welcome to オリジナルアプリ（仮）
   
 
 

@@ -13,10 +13,12 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
   const createdAt = new Date();
   let commentNumber = null;
   let storedComment = null;
-  Comment.count({
-    where: { combinationId: combinationId }
-  }).then((count) => {
-    commentNumber = count + 1; //何番目のコメントか判別する値
+  Comment.findOne({
+    where: { combinationId: combinationId },
+    order: [['"createdAt"', 'DESC']]
+  }).then((latestComment) => {
+    if (latestComment) commentNumber = latestComment.commentNumber + 1; //何番目のコメントか判別する値
+    else commentNumber = 1; //最初のコメント
   }).then(() => {
     return Comment.create({
       combinationId: combinationId,

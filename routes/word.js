@@ -6,12 +6,14 @@ const Word = require('../models/word');
 const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
 const Comment = require('../models/comment');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.get('/new', authenticationEnsurer, (req, res, next) => {
-  res.render('new', { user: req.user });
+router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
+  res.render('new', { user: req.user, csrfToken: req.csrfToken() });
 });
 
-router.post('/', authenticationEnsurer, (req, res, next) => {
+router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   let newWord = null;
   Word.create({
     word: req.body.word,
@@ -39,13 +41,14 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
   })
 });
 
-router.get('/:wordId/edit', authenticationEnsurer, (req, res, next) => {
+router.get('/:wordId/edit', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const wordId = req.params.wordId;
   Word.findById(wordId).then((word) => {
     if (isMine(req, word)) { //作成者のみが編集フォームを開ける
       res.render('edit', {
         user: req.user,
-        word: word
+        word: word,
+        csrfToken: req.csrfToken()
       });
     } else {
       const err = new Error('指定された単語がない、または、編集する権限がありません');
@@ -59,7 +62,7 @@ const isMine = (req, word) => {
   return word && parseInt(word.createdBy) === parseInt(req.user.id);
 };
 
-router.post('/:wordId', authenticationEnsurer, (req, res, next) => {
+router.post('/:wordId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Word.findById(req.params.wordId).then((word) => {
     if (isMine(req, word)) {
       if (parseInt(req.query.edit) === 1) { //単語の編集

@@ -1,8 +1,7 @@
-.main-bgcolor{
-  background-color: #59B51D;
-}
-.sub-bgcolor{
-  background-color: #343434;
+.container{
+  padding-top: 70px;
+  padding-bottom: 1rem;
+  background-color: #ffffff; 
 }
 .btn-main-color{
   color: #ffffff;
@@ -127,6 +126,12 @@ background: #eff0f1;
 .empty-message-container{
   text-align: center;
   padding: 3rem;
+  border: solid 3px rgba(0, 0, 0, .1);
+  border-radius: 8px;
+}
+.login-button-container{
+  text-align: center;
+  padding: 5rem;
   border: solid 3px rgba(0, 0, 0, .1);
   border-radius: 8px;
 }

@@ -3,6 +3,7 @@ extends layout
 block content
   h3.my-3 説明の編集
   form(method="post", action=`/words/${word.wordId}?edit=1`)
+    input(type="hidden", name="_csrf" value!=csrfToken)
     div.form-group
       label キーワード
       p.large-font #{word.word}

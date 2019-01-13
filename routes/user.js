@@ -8,8 +8,10 @@ const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
 const Comment = require('../models/comment');
 const moment = require('moment-timezone');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.get('/:userId/mywords', authenticationEnsurer, (req, res, next) => {
+router.get('/:userId/mywords', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const userId = req.params.userId;
   Word.findAll({
     include: [
@@ -27,7 +29,8 @@ router.get('/:userId/mywords', authenticationEnsurer, (req, res, next) => {
     });
     res.render('myword', {
       user: req.user,
-      words: words
+      words: words,
+      csrfToken: req.csrfToken()
     });
   });
 });
