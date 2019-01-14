@@ -25,7 +25,7 @@ describe('/login', () => {
     request(app)
       .get('/login')
       .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect(/<a class="btn btn-main-color my-3" href="\/auth\/github"/)
+      .expect(/<a class="btn btn-main-color" href="\/auth\/github"/)
       .expect(200, done);
   });
 
@@ -57,34 +57,44 @@ describe('/words', () => {
 
   it('投稿が作成でき、組み合わせが表示される', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
-      //投稿を二つ作成
+      //投稿を2つ作成
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: 'テストワード1', description: 'テスト説明1' })
-          .expect('Location', '/')
-          .expect(302)
+          .get('/words/new')
           .end((err, res) => {
+            const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+            const csrf = match[1];
+            const setCookie = res.headers['set-cookie'];
+
             request(app)
               .post('/words')
-              .send({ word: 'テストワード2', description: 'テスト説明2' })
+              .set('cookie', setCookie)
+              .send({ word: '単語投稿ワード1', description: '単語投稿説明1', _csrf: csrf })
               .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
-                if (err) done(err);
-                resolve();
+                request(app)
+                  .post('/words')
+                  .set('cookie', setCookie)
+                  .send({ word: '単語投稿ワード2', description: '単語投稿説明2', _csrf: csrf })
+                  .expect('Location', '/')
+                  .expect(302)
+                  .end((err, res) => {
+                    if (err) done(err);
+                    resolve();
+                  });
               });
           });
       });
-      
+
       //組み合わせが表示されているか確認
       promiseTwoWords.then(() => {
         request(app)
           .get('/')
-          .expect(/ワード1/)
-          .expect(/説明1/)
-          .expect(/ワード2/)
-          .expect(/説明2/)
+          .expect(/単語投稿ワード1/)
+          .expect(/単語投稿説明1/)
+          .expect(/単語投稿ワード2/)
+          .expect(/単語投稿説明2/)
           .expect(200)
           .end((err, res) => {
             //テストで作成したデータを削除
@@ -116,25 +126,35 @@ describe('/users/:userId/combinations/:combinationId', () => {
 
   it('お気に入りに追加できる', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
-      //投稿を二つ作成
-      const promiseTwoWords = new Promise((resolve) => {
-        request(app)
-          .post('/words')
-          .send({ word: 'お気に入り追加ワード1', description: 'お気に入り追加説明1' })
-          .expect('Location', '/')
-          .expect(302)
-          .end((err, res) => {
-            request(app)
-              .post('/words')
-              .send({ word: 'お気に入り追加ワード2', description: 'お気に入り追加説明2' })
-              .expect('Location', '/')
-              .expect(302)
-              .end((err, res) => {
-                if (err) done(err);
-                resolve();
-              });
-          });
-      });
+     //投稿を2つ作成
+     const promiseTwoWords = new Promise((resolve) => {
+      request(app)
+        .get('/words/new')
+        .end((err, res) => {
+          const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+          const csrf = match[1];
+          const setCookie = res.headers['set-cookie'];
+
+          request(app)
+            .post('/words')
+            .set('cookie', setCookie)
+            .send({ word: 'お気に入り追加ワード1', description: 'お気に入り追加説明1', _csrf: csrf })
+            .expect('Location', '/')
+            .expect(302)
+            .end((err, res) => {
+              request(app)
+                .post('/words')
+                .set('cookie', setCookie)
+                .send({ word: 'お気に入り追加ワード2', description: 'お気に入り追加説明2', _csrf: csrf })
+                .expect('Location', '/')
+                .expect(302)
+                .end((err, res) => {
+                  if (err) done(err);
+                  resolve();
+                });
+            });
+        });
+    });
 
       //お気に入りに追加できることをテスト
       const userId = 0;
@@ -184,26 +204,38 @@ describe('/words/:wordId?edit=1', () => {
     passportStub.uninstall(app);
   });
 
-  it('単語の説明が更新でき、組み合わせの説明も更新できる', (done) => {
+  it('単語の説明が更新できる', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
-      //投稿を二つ作成
+      //投稿を2つ作成
+      let csrf = null;
+      let setCookie = null;
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: '説明更新ワード1', description: '更新説明1' })
-          .expect('Location', /\//)
-          .expect(302)
-          .end((err, res) => {
-            request(app)
-              .post('/words')
-              .send({ word: '説明更新ワード2', description: '更新説明2' })
-              .expect('Location', /\//)
-              .expect(302)
-              .end((err, res) => {
-                if (err) done(err);
-                resolve();
-              });
-          });
+        .get('/words/new')
+        .end((err, res) => {
+          const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+          csrf = match[1];
+          setCookie = res.headers['set-cookie'];
+
+          request(app)
+            .post('/words')
+            .set('cookie', setCookie)
+            .send({ word: '更新ワード1', description: '更新説明1', _csrf: csrf })
+            .expect('Location', '/')
+            .expect(302)
+            .end((err, res) => {
+              request(app)
+                .post('/words')
+                .set('cookie', setCookie)
+                .send({ word: '更新ワード2', description: '更新説明2', _csrf: csrf })
+                .expect('Location', '/')
+                .expect(302)
+                .end((err, res) => {
+                  if (err) done(err);
+                  resolve();
+                });
+            });
+        });
       });
 
       const userId = 0;
@@ -215,7 +247,8 @@ describe('/words/:wordId?edit=1', () => {
       }).then((word) => {
         request(app)
           .post(`/words/${word.wordId}?edit=1`)
-          .send({ description: '更新済み' })
+          .set('cookie', setCookie)
+          .send({ description: '更新済み', _csrf: csrf })
           .expect('Location', `/users/${userId}/mywords`)
           .expect(302)
           .end((err, res) => {
@@ -252,19 +285,29 @@ describe('combinations/:combinationId/comments', () => {
       //投稿を二つ作成
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: 'コメント投稿ワード1', description: 'コメント投稿説明1' })
-          .expect('Location', /\//)
-          .expect(302)
+          .get('/words/new')
           .end((err, res) => {
+            const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+            const csrf = match[1];
+            const setCookie = res.headers['set-cookie'];
+  
             request(app)
               .post('/words')
-              .send({ word: 'コメント投稿ワード2', description: 'コメント投稿説明2' })
-              .expect('Location', /\//)
+              .set('cookie', setCookie)
+              .send({ word: 'コメント投稿ワード1', description: 'コメント投稿説明1', _csrf: csrf })
+              .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
-                if (err) done(err);
-                resolve();
+                request(app)
+                  .post('/words')
+                  .set('cookie', setCookie)
+                  .send({ word: 'コメント投稿ワード2', description: 'コメント投稿説明2', _csrf: csrf })
+                  .expect('Location', '/')
+                  .expect(302)
+                  .end((err, res) => {
+                    if (err) done(err);
+                    resolve();
+                  });
               });
           });
       });
@@ -329,19 +372,29 @@ describe('/combinations/:combinationId/comments/:commentId?delete=1', () => {
       //投稿を二つ作成
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: 'コメント削除ワード1', description: 'コメント削除説明1' })
-          .expect('Location', /\//)
-          .expect(302)
+          .get('/words/new')
           .end((err, res) => {
+            const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+            const csrf = match[1];
+            const setCookie = res.headers['set-cookie'];
+  
             request(app)
               .post('/words')
-              .send({ word: 'コメント削除ワード2', description: 'コメント削除説明2' })
-              .expect('Location', /\//)
+              .set('cookie', setCookie)
+              .send({ word: 'コメント削除ワード1', description: 'コメント削除説明1', _csrf: csrf })
+              .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
-                if (err) done(err);
-                resolve();
+                request(app)
+                  .post('/words')
+                  .set('cookie', setCookie)
+                  .send({ word: 'コメント削除ワード2', description: 'コメント削除説明2', _csrf: csrf })
+                  .expect('Location', '/')
+                  .expect(302)
+                  .end((err, res) => {
+                    if (err) done(err);
+                    resolve();
+                  });
               });
           });
       });
@@ -426,23 +479,35 @@ describe('/words/:wordId?delete=1', () => {
   it('単語に関連する全ての情報が削除できる', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
       //投稿を二つ作成
+      let csrf = null;
+      let setCookie = null;
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: '単語削除ワード1', description: '単語削除説明1' })
-          .expect('Location', /\//)
-          .expect(302)
-          .end((err, res) => {
-            request(app)
-              .post('/words')
-              .send({ word: '単語削除ワード2', description: '単語削除説明2' })
-              .expect('Location', /\//)
-              .expect(302)
-              .end((err, res) => {
-                if (err) done(err);
-                resolve();
-              });
-          });
+        .get('/words/new')
+        .end((err, res) => {
+          const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+          csrf = match[1];
+          setCookie = res.headers['set-cookie'];
+
+          request(app)
+            .post('/words')
+            .set('cookie', setCookie)
+            .send({ word: '単語削除ワード1', description: '単語削除説明1', _csrf: csrf })
+            .expect('Location', '/')
+            .expect(302)
+            .end((err, res) => {
+              request(app)
+                .post('/words')
+                .set('cookie', setCookie)
+                .send({ word: '単語削除ワード2', description: '単語削除説明2', _csrf: csrf })
+                .expect('Location', '/')
+                .expect(302)
+                .end((err, res) => {
+                  if (err) done(err);
+                  resolve();
+                });
+            });
+        });
       });
 
       const userId = 0;
@@ -495,11 +560,13 @@ describe('/words/:wordId?delete=1', () => {
       const promiseDeleted = promiseCommentAndFavorite.then(() => {
         return new Promise((resolve) => {
           request(app)
-          .post(`/words/${storedWordId}?delete=1`)
-          .end((err, res) => {
-            if (err) done(err);
-            resolve();
-          });
+            .post(`/words/${storedWordId}?delete=1`)
+            .set('cookie', setCookie)
+            .send({_csrf: csrf})
+            .end((err, res) => {
+              if (err) done(err);
+              resolve();
+            });
         });
       });
 
@@ -551,25 +618,35 @@ describe('/users/:userId/mywords', () => {
   it('自分が投稿一覧が表示できる', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
      //投稿を二つ作成
-      const promiseTwoWords = new Promise((resolve) => {
-        request(app)
-          .post('/words')
-          .send({ word: '投稿一覧ワード1', description: '投稿一覧説明1' })
-          .expect('Location', /\//)
-          .expect(302)
-          .end((err, res) => {
-            request(app)
-              .post('/words')
-              .send({ word: '投稿一覧ワード2', description: '投稿一覧説明2' })
-              .expect('Location', /\//)
-              .expect(302)
-              .end((err, res) => {
-                if (err) done(err);
-                resolve();
-              });
-          });
-      });
+     const promiseTwoWords = new Promise((resolve) => {
+      request(app)
+        .get('/words/new')
+        .end((err, res) => {
+          const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+          const csrf = match[1];
+          const setCookie = res.headers['set-cookie'];
 
+          request(app)
+            .post('/words')
+            .set('cookie', setCookie)
+            .send({ word: '投稿一覧ワード1', description: '投稿一覧説明1', _csrf: csrf })
+            .expect('Location', '/')
+            .expect(302)
+            .end((err, res) => {
+              request(app)
+                .post('/words')
+                .set('cookie', setCookie)
+                .send({ word: '投稿一覧ワード2', description: '投稿一覧説明2', _csrf: csrf })
+                .expect('Location', '/')
+                .expect(302)
+                .end((err, res) => {
+                  if (err) done(err);
+                  resolve();
+                });
+            });
+        });
+    });
+  
       //自分の投稿一覧ページに投稿した単語が表示されているか確認
       const userId = 0;
       promiseTwoWords.then(() => {
@@ -586,7 +663,7 @@ describe('/users/:userId/mywords', () => {
             }).then((words) => {
               return Promise.all(words.map(word => deleteWordAggregate(word)));
             }).then(() => {
-              if (err) return done();
+              if (err) return done(err);
               done();
             });
           });
@@ -611,23 +688,34 @@ describe('/users/:userId/favorites', () => {
       //投稿を二つ作成
       const promiseTwoWords = new Promise((resolve) => {
         request(app)
-          .post('/words')
-          .send({ word: 'お気に入り一覧ワード1', description: 'お気に入り一覧説明1' })
-          .expect('Location', /\//)
-          .expect(302)
+          .get('/words/new')
           .end((err, res) => {
+            const match = res.text.match(/<input type="hidden" name="_csrf" value="(.*?)">/);
+            const csrf = match[1];
+            const setCookie = res.headers['set-cookie'];
+  
             request(app)
               .post('/words')
-              .send({ word: 'お気に入り一覧ワード2', description: 'お気に入り一覧説明2' })
-              .expect('Location', /\//)
+              .set('cookie', setCookie)
+              .send({ word: 'お気に入り一覧ワード1', description: 'お気に入り一覧説明1', _csrf: csrf })
+              .expect('Location', '/')
               .expect(302)
               .end((err, res) => {
-                if (err) done(err);
-                resolve();
+                request(app)
+                  .post('/words')
+                  .set('cookie', setCookie)
+                  .send({ word: 'お気に入り一覧ワード2', description: 'お気に入り一覧説明2', _csrf: csrf })
+                  .expect('Location', '/')
+                  .expect(302)
+                  .end((err, res) => {
+                    if (err) done(err);
+                    resolve();
+                  });
               });
           });
       });
 
+      //お気に入りに追加
       const userId = 0;
       const promiseFavorite = promiseTwoWords.then(() => {
         return Word.findOne({
@@ -652,6 +740,7 @@ describe('/users/:userId/favorites', () => {
         });
       });
 
+      //テスト
       promiseFavorite.then(() => {
         request(app)
           .get(`/users/${userId}/favorites`)
