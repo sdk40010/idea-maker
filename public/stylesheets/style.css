@@ -1,7 +1,8 @@
 .container{
   padding-top: 70px;
   padding-bottom: 1rem;
-  background-color: #ffffff; 
+  background-color: #ffffff;
+  height: 100%; 
 }
 .btn-main-color{
   color: #ffffff;
@@ -134,4 +135,16 @@ background: #eff0f1;
   padding: 5rem;
   border: solid 3px rgba(0, 0, 0, .1);
   border-radius: 8px;
+}
+.underline-left{
+  background-color: rgba(0, 0, 0, .1);
+  height: 3px;
+  width: 50px;
+  margin-bottom: 1rem;
+}
+.underline-jumbotron{
+  background-color: rgba(0, 0, 0, .1);
+  height: 3px;
+  width: 200px;
+  margin: 0 auto 1rem auto;
 }
