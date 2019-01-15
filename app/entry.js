@@ -75,6 +75,13 @@ $('#comment-area').on('click', '.comment-delete-button', function() {
   }
 });
 
+$('.word-delete-form').each((i, e) => {
+  const commentDeleteButton = $(e);
+  commentDeleteButton.submit(() => {
+    return confirm('投稿を削除しますか？');
+  });
+});
+
 
 
 

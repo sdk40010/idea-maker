@@ -25,7 +25,7 @@ block content
             p.card-text.text-muted.small-font No description
         div.card-footer
           a(href=`/words/${word.wordId}/edit`).card-link.btn.btn-outline-main-color.btn-sm.word-edit-button 編集
-          form(method="post" action=`/words/${word.wordId}?delete=1` style="display: inline;")
+          form(method="post" action=`/words/${word.wordId}?delete=1`).word-delete-form
             input(type="hidden", name="_csrf" value!=csrfToken)
             button(
               data-word-id=word.wordId).btn.btn-outline-secondary.btn-sm 削除

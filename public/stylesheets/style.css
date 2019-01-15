@@ -136,15 +136,12 @@ background: #eff0f1;
   border: solid 3px rgba(0, 0, 0, .1);
   border-radius: 8px;
 }
-.underline-left{
-  background-color: rgba(0, 0, 0, .1);
-  height: 3px;
-  width: 50px;
-  margin-bottom: 1rem;
-}
 .underline-jumbotron{
   background-color: rgba(0, 0, 0, .1);
   height: 3px;
   width: 200px;
   margin: 0 auto 1rem auto;
+}
+.word-delete-form{
+  display: inline;
 }
