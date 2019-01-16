@@ -104,7 +104,7 @@ html, body{
   cursor: pointer;
 }
 .favorite-button:hover{
-background: #eff0f1;
+  background: rgba(0, 0, 0, .05);
 }
 .favorite-icon{
   padding: 7px;
@@ -120,7 +120,7 @@ background: #eff0f1;
   width: 50px;
 }
 .jamp-to-comment-button:hover{
-  background: #eff0f1;
+  background: rgba(0, 0, 0, .05);
 }
 .comment-icon{
   padding: 7px;
@@ -148,4 +148,13 @@ background: #eff0f1;
 }
 .word-delete-form{
   display: inline;
+}
+.how-to-use-button{
+  display: block;
+  height: 24px;
+  margin-right: 1rem;
+  color: rgba(0, 0, 0, .3);
+}
+.how-to-use-button:hover{
+  color: rgba(0, 0, 0, .5);
 }
