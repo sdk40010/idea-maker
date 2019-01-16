@@ -1,8 +1,12 @@
+html, body{
+  height: 100%;
+}
 .container{
   padding-top: 70px;
   padding-bottom: 1rem;
   background-color: #ffffff;
-  height: 100%; 
+  height: auto;
+  min-height: 100%; 
 }
 .btn-main-color{
   color: #ffffff;
