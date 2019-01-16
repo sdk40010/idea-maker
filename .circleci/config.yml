@@ -23,7 +23,7 @@ jobs:
           name: Wait for Db
           command: dockerize -wait tcp://localhost:5432 -timeout 2m
       - run:
-          command: node_modules/.bin/mocha test --reporter mocha-junit-reporter
+          command: node_modules/.bin/mocha test --reporter mocha-junit-reporter --timeout 10000 --require should --exit
           environment:
             MOCHA_FILE: ./junit/test-results.xml
           when: always
