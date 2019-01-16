@@ -19,7 +19,7 @@
 ↑投稿した単語は、自分や他のユーザーが今までに投稿した単語とペアになって表示されます。
 
 - お気に入り
-![favorite1](https://user-images.githubusercontent.com/44635710/51190679-1e574c00-1926-11e9-8f2b-67e8ed4fc057.png)
+![favorite1](https://user-images.githubusercontent.com/44635710/51225766-6bbbd380-198f-11e9-9119-b309408215c5.png)
 ![favorite2](https://user-images.githubusercontent.com/44635710/51189979-915fc300-1924-11e9-8028-f0ee201ad8e6.png)
 お気に入りに追加すると、マイページのお気に入り一覧から参照できるようになります。
 
