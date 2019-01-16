@@ -1,0 +1,7 @@
+{
+  "name": "idea-maker",
+  "description": "アイデアメーカー",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}

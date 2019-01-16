@@ -4,7 +4,7 @@
 [![CircleCI](https://circleci.com/gh/sdk40010/idea-maker/tree/master.svg?style=svg)](https://circleci.com/gh/sdk40010/idea-maker/tree/master)
 
 ## 説明
-ユーザーが投稿した単語を使って、単語と単語の組み合わせを作ります。ピンとくるものを見つけましょう。
+ユーザーが投稿した単語を使って組み合わせを作ります。ピンとくるものを見つけましょう。
 
 ***デモ:***
 ![Demo](https://user-images.githubusercontent.com/44635710/51223087-c7805f80-1983-11e9-92d0-3e201d2f3fc8.gif)
