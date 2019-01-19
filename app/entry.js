@@ -45,8 +45,6 @@ commentButton.click(() => {
         commentCounter.text(`${data.commentCounter}件のコメント`);
       });
   }
-
-
 });
 
 const getCommentHtml = (commentObj) => {
@@ -76,10 +74,15 @@ $('#comment-area').on('click', '.comment-delete-button', function() {
 });
 
 $('.word-delete-form').each((i, e) => {
-  const commentDeleteButton = $(e);
-  commentDeleteButton.submit(() => {
+  const wordDeleteForm = $(e);
+  wordDeleteForm.submit(() => {
     return confirm('投稿を削除しますか？');
   });
+});
+
+const wordCreateForm = $('.word-create-form');
+wordCreateForm.submit(() => {
+  if (!$('input[name="word"]').val()) return false;
 });
 
 

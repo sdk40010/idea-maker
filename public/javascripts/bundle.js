@@ -158,10 +158,14 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment-area').on('click', '.com
   }
 });
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.word-delete-form').each(function (i, e) {
-  var commentDeleteButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
-  commentDeleteButton.submit(function () {
+  var wordDeleteForm = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e);
+  wordDeleteForm.submit(function () {
     return confirm('投稿を削除しますか？');
   });
+});
+var wordCreateForm = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.word-create-form');
+wordCreateForm.submit(function () {
+  if (!jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name="word"]').val()) return false;
 });
 
 /***/ }),
