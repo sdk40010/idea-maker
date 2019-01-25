@@ -70,7 +70,7 @@ router.get('/', (req, res, next) => {
         const value = commentMap.get(comment.combinationId) || 1; 
         commentMap.set(comment.combinationId, value);
       });
-      //コメント情報がない組み合わせに、コメントがないことを示す「0」を設定する
+      //コメント情報がない組み合わせに、閲覧ユーザーがコメントしていないことを示す「0」を設定する
       storedCombinations.forEach((sc) => {
         const value = commentMap.get(sc.combinationId) || 0; //デフォルト値は0を利用
         commentMap.set(sc.combinationId, value);
