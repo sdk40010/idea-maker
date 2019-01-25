@@ -106,7 +106,7 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     comments.forEach((comment) => {
       if (comment) commentMap.set(comment.combinationId, 1);
     });
-    //コメント情報がない組み合わせに、コメントがないことを示す「0」を設定する
+    //コメント情報がない組み合わせに、閲覧ユーザーがコメントしていないことを示す「0」を設定する
     storedCombinations.forEach((sc) => {
       const value = commentMap.get(sc.combinationId) || 0;
       commentMap.set(sc.combinationId, value);
