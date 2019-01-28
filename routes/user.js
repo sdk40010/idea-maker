@@ -97,20 +97,21 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     const favoriteMap = new Map(); //key: combinationId, value: favorite
     storedFavorites.forEach((f) => { favoriteMap.set(f.combinationId, f.favorite); });
     storedFavoriteMap = favoriteMap;
-    return Promise.all(storedCombinations.map(sc => Comment.findOne({
-      where: {combinationId: sc.combinationId, createdBy: req.user.id}
-    })));
-  }).then((comments) => {
-    //コメントマップ（キー:組み合わせID, 値:コメント情報）を作成する
+
+    //閲覧ユーザーのコメント情報（どの組み合わせにコメントしているか）から、コメントマップ（キー:組み合わせID, 値:コメント情報）を作成する
     const commentMap = new Map(); //key: combinationId, value: comment
-    comments.forEach((comment) => {
-      if (comment) commentMap.set(comment.combinationId, 1);
+    const promises = storedCombinations.map(sc => {
+      return Comment.count({
+        where: { combinationId: sc.combinationId, createdBy: req.user.id }
+      }).then((counter) => {
+        if (counter > 0) commentMap.set(sc.combinationId, 1);
+        //閲覧ユーザーがコメントしていないことを示す「0」を設定する
+        else if (counter === 0) commentMap.set(sc.combinationId, 0);
+      });
     });
-    //コメント情報がない組み合わせに、閲覧ユーザーがコメントしていないことを示す「0」を設定する
-    storedCombinations.forEach((sc) => {
-      const value = commentMap.get(sc.combinationId) || 0;
-      commentMap.set(sc.combinationId, value);
-    });
+    return Promise.all(promises).then(() => commentMap);
+  }).then((commentMap) => {
+    console.log(commentMap);
     res.render('favorite', {
       user: req.user,
       combinations: storedCombinations,

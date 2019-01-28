@@ -5,10 +5,10 @@ block content
   form(method="post", action=`/words/${word.wordId}?edit=1`)
     input(type="hidden", name="_csrf" value!=csrfToken)
     div.form-group
-      label キーワード
-      p.large-font #{word.word}
+      label(for="word") キーワード
+      p#word.large-font #{word.word}
     div.form-group
       label(for="description") 説明
-      textarea(name="description").form-control #{word.description}
+      textarea(name="description" rows="4")#description.form-control #{word.description}
     div
       button(type="submit").btn.btn-main-color 完了

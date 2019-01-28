@@ -59,23 +59,20 @@ router.get('/', (req, res, next) => {
         });
       });
       storedWordMap = wordMap;
-      //閲覧ユーザーのコメント情報（どの組み合わせにコメントしているか）を取得する
-      return Comment.findAll({
-        where: { createdBy: req.user.id },
-        order: [['"combinationId"', 'DESC']]
-      });
-    }).then((comments) => {
-      //コメントMap（キー:組み合わせID, 値:コメント情報）を作成する
+
+      //閲覧ユーザーのコメント情報（どの組み合わせにコメントしているか）から、コメントMap（キー: 組み合わせID, 値: コメント情報）を作成する
       const commentMap = new Map(); //key: combinationId, value: comment
-      comments.forEach((comment) => {
-        const value = commentMap.get(comment.combinationId) || 1; 
-        commentMap.set(comment.combinationId, value);
+      const promises= storedCombinations.map(sc => {
+        return Comment.count({
+          where: { combinationId: sc.combinationId, createdBy: req.user.id }
+        }).then((counter) => {
+          if (counter > 0) commentMap.set(sc.combinationId, 1);
+          //閲覧ユーザーがコメントしていないことを示す「0」を設定する
+          else if (counter === 0) commentMap.set(sc.combinationId, 0);
+        });
       });
-      //コメント情報がない組み合わせに、閲覧ユーザーがコメントしていないことを示す「0」を設定する
-      storedCombinations.forEach((sc) => {
-        const value = commentMap.get(sc.combinationId) || 0; //デフォルト値は0を利用
-        commentMap.set(sc.combinationId, value);
-      });
+      return Promise.all(promises).then(() => commentMap);
+    }).then((commentMap) => {
       res.render('index', {
         user: req.user,
         combinations: storedCombinations,
