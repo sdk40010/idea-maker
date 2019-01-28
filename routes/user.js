@@ -53,45 +53,43 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     storedCombinations = combinations;
     const promises = [];
     combinations.forEach((combination) => {
-      const p1 = Word.findOne({
+      const p1 = Word.findById(combination.firstWordId, {
         include: [
           {
             model: User,
             attributes: ['username']
           }
-        ],
-        where: { wordId: combination.firstWordId }
+        ]
       });
-      const p2 = Word.findOne({
+      const p2 = Word.findById(combination.secondWordId, {
         include: [
           {
             model: User,
             attributes: ['username']
           }
-        ],
-        where: { wordId: combination.secondWordId }
+        ]
       });
       promises.push(p1, p2);
     });
+    return Promise.all(promises);
+  }).then((words) => {
     //組み合わせに使われている単語からワードMapを作成
     const wordMap = new Map(); //key:wordId, value: Word
-    return Promise.all(promises).then((words) => {
-      words.forEach((word) => {
-        let value = wordMap.get(word.wordId);
-        if (!value) {
-          value = {
-            word: word.word,
-            description: word.description,
-            createdBy: word.createdBy,
-            username: word.user.username,
-            formattedCreatedAt: moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm'),
-            isUpdated: word.createdAt.getTime() < word.updatedAt.getTime()
-          };
-        }
-        wordMap.set(word.wordId, value);
-      });
-      storedWordMap = wordMap;
+    words.forEach((word) => {
+      let value = wordMap.get(word.wordId);
+      if (!value) {
+        value = {
+          word: word.word,
+          description: word.description,
+          createdBy: word.createdBy,
+          username: word.user.username,
+          formattedCreatedAt: moment(word.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm'),
+          isUpdated: word.createdAt.getTime() < word.updatedAt.getTime()
+        };
+      }
+      wordMap.set(word.wordId, value);
     });
+    storedWordMap = wordMap;
   }).then(() => {
     //お気に入りマップ(キー:組み合わせID, 値:お気に入り情報)を作成する
     const favoriteMap = new Map(); //key: combinationId, value: favorite
@@ -111,7 +109,6 @@ router.get('/:userId/favorites', authenticationEnsurer, (req, res, next) => {
     });
     return Promise.all(promises).then(() => commentMap);
   }).then((commentMap) => {
-    console.log(commentMap);
     res.render('favorite', {
       user: req.user,
       combinations: storedCombinations,

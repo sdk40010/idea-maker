@@ -35,23 +35,21 @@ router.get('/:combinationId', authenticationEnsurer, (req, res, next) => {
       comment.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
     });
     storedComments = comments;
-    const p1 = Word.findOne({
+    const p1 = Word.findById(storedCombination.firstWordId, {
       include: [
         {
           model: User,
           attributes: ['username']
         }
-      ],
-      where: {wordId: storedCombination.firstWordId}
+      ]
     });
-    const p2 = Word.findOne({
+    const p2 = Word.findById(storedCombination.secondWordId, {
       include: [
         {
           model: User,
           attributes: ['username']
         }
-      ],
-      where: {wordId: storedCombination.secondWordId}
+      ]
     });
     return Promise.all([p1, p2]);
   }).then((words) => {
