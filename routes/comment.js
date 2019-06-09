@@ -5,6 +5,7 @@ const authenticationEnsurer = require('./authentication-ensurer');
 const User = require('../models/user');
 const Combination = require('../models/combination');
 const Comment = require('../models/comment');
+const moment = require('moment-timezone');
 
 router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) => {
   const combinationId = req.params.combinationId;
@@ -38,6 +39,7 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
       where: { combinationId: combinationId, commentNumber: commentNumber }
     });
   }).then((comment) => {
+    comment.dataValues.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
     storedComment = comment;
     return Combination.findById(combinationId);
   }).then((combination) => {
@@ -45,7 +47,27 @@ router.post('/:combinationId/comments', authenticationEnsurer, (req, res, next) 
       commentCounter: combination.commentCounter + 1
     });
   }).then((updatedCombination) => {
-    res.json({ status: 'OK', comment: storedComment, commentCounter: updatedCombination.commentCounter });
+    res.json({ status: 'OK', comment: storedComment, user: req.user, commentCounter: updatedCombination.commentCounter });
+  });
+});
+
+router.get("/:combinationId/comments", authenticationEnsurer, (req, res, next) => {
+  const combinationId = req.params.combinationId
+  
+  Comment.findAll({
+    include: [
+      {
+        model: User,
+        attributes: ["username"]
+      }
+    ],
+    where: { combinationId: combinationId },
+    order: [["createdAt", "DESC"]]
+  }).then(comments => {
+    comments.forEach((comment) => {
+      comment.dataValues.formattedCreatedAt = moment(comment.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
+    });
+    res.json({status: 'OK', comments: comments, user: req.user});
   });
 });
 

@@ -4,6 +4,9 @@ const global = Function('return this;')();
 global.jQuery = $;
 import bootstrap from 'bootstrap';
 import moment from 'moment-timezone';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Comments from './comment';
 
 $('.favorite-button').each((i, e) => {
   const favoriteButton = $(e);
@@ -84,6 +87,13 @@ const wordCreateForm = $('.word-create-form');
 wordCreateForm.submit(() => {
   if (!$('input[name="word"]').val()) return false;
 });
+
+ReactDOM.render(
+  <Comments />,
+  document.getElementById('commentForm-and-commentList')
+);
+
+
 
 
 
