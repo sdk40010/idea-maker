@@ -57,6 +57,20 @@ block content
                   p.card-text.text-muted.word-description #{secondWord.description}
                 else
                   p.card-text.text-muted.small-font No description
+      nav
+        ul.pagination.justify-content-center
+          if page.current >= 2
+            li.page-item
+              a.page-link(href=`/?page=${page.current - 1}`) 前へ
+          else
+            li.page-item.disabled
+              a.page-link.disabled(href="#" tabindex="-1") 前へ
+          if page.current < page.max
+            li.page-item
+              a.page-link(href=`/?page=${page.current + 1}`) 次へ
+          else
+            li.page-item.disabled
+              a.page-link(href="#" tabindex="-1") 次へ
     else
       div.empty-message-container.mt-3
         p まだ組み合わせがありません

@@ -44,30 +44,7 @@ block content
             p.card-text.text-muted.word-description #{secondWord.description}
           else
             p.card-text.text-muted.small-font No description
-  //- div.mt-5.mb-3
-  //-   div.form-group
-  //-     textarea(name="comment" placeholder="コメントを入力" rows="4").form-control
-  //-   button(
-  //-     data-combination-id=combination.combinationId)#comment-button.btn.btn-main-color 送信
-  //- div
-  //-   h3 コメント
-  //-   p.comment-counter #{combination.commentCounter}件のコメント
-  //-   hr
-  //-   div#comment-area
-  //-     - var hasComment = comments.length > 0
-  //-     if hasComment
-  //-       each comment in comments
-  //-         div(id=`${comment.commentNumber}`).comment-container
-  //-           span.comment-username #{comment.user.username}
-  //-           span.comment-creation-day #{comment.formattedCreatedAt}
-  //-           div.comment #{comment.comment}
-  //-           - var isMine = parseInt(user.id) === comment.createdBy
-  //-           if isMine
-  //-             button(
-  //-               data-combination-id=comment.combinationId
-  //-               data-comment-number=comment.commentNumber).comment-delete-button.btn.btn-outline-secondary.btn-sm 削除
-  //-           hr
-  div#commentForm-and-commentList
+  div#comment
   script
    | const IdeaMaker = (function(){
    |  return {

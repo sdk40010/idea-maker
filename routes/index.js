@@ -6,7 +6,9 @@ const Word = require('../models/word');
 const Combination = require('../models/combination');
 const Favorite = require('../models/favorite');
 const Comment = require('../models/comment');
+const { Op } = require('sequelize');
 const moment = require('moment-timezone');
+
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -14,13 +16,42 @@ router.get('/', (req, res, next) => {
     let storedCombinations = null;
     let storedFavoriteMap = null;
     let storedWordMap = null;
-    Combination.findAll({
-      order: [['"combinationId', 'DESC']]
+    const page = {
+      current: 0,
+      max: 0
+    };
+    const perPage = 10; // 1ページあたりの表示件数
+
+    const pagePromise = new Promise(resolve => {
+      if (req.query.page) {
+        page.current = Math.max(req.query.page, 1); // 1以下のページ数を修正
+      } else {
+        page.current = 1;
+      }
+      Combination.count().then(count => {
+        page.max = Math.ceil(count / perPage);
+        page.current = Math.min(page.current, page.max); // 最大値を超えるページ数を修正
+        resolve();
+      });
+    });
+    
+    pagePromise.then(() => {
+      return Combination.findAll({
+        order: [['"combinationId', 'DESC']],
+        offset: (page.current - 1) * perPage,
+        limit: perPage
+      });
     }).then((combinations) => {
       storedCombinations = combinations;
       //閲覧ユーザーのお気に入り情報（どの組み合わせをお気に入りに追加しているか）を取得する
+      const combinationIdList = combinations.map(c => c.combinationId);
       return Favorite.findAll({
-        where: { userId: req.user.id },
+        where: {
+          userId: req.user.id,
+          combinationId: {
+            [Op.or]: [combinationIdList]
+          }
+        },
         order: [['"combinationId"', 'DESC']]
       });
     }).then((favorites) => {
@@ -78,8 +109,10 @@ router.get('/', (req, res, next) => {
         combinations: storedCombinations,
         favoriteMap: storedFavoriteMap,
         wordMap: storedWordMap,
-        commentMap: commentMap
+        commentMap: commentMap,
+        page: page
       });
+      console.log("page: " + page);
     })
   } else {
     res.render('index', { user: req.user });

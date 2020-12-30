@@ -88,10 +88,14 @@ wordCreateForm.submit(() => {
   if (!$('input[name="word"]').val()) return false;
 });
 
-ReactDOM.render(
-  <Comments />,
-  document.getElementById('commentForm-and-commentList')
-);
+const commentDiv = document.getElementById('comment');
+if (commentDiv) {
+  ReactDOM.render(
+    <Comments />,
+    commentDiv
+  );
+}
+
 
 
 

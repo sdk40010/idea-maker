@@ -175,7 +175,11 @@ var wordCreateForm = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.word-create
 wordCreateForm.submit(function () {
   if (!jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name="word"]').val()) return false;
 });
-react_dom__WEBPACK_IMPORTED_MODULE_4___default.a.render(react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_comment__WEBPACK_IMPORTED_MODULE_5__["default"], null), document.getElementById('commentForm-and-commentList'));
+var commentDiv = document.getElementById('comment');
+
+if (commentDiv) {
+  react_dom__WEBPACK_IMPORTED_MODULE_4___default.a.render(react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_comment__WEBPACK_IMPORTED_MODULE_5__["default"], null), commentDiv);
+}
 
 /***/ }),
 /* 1 */
