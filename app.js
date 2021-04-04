@@ -42,6 +42,7 @@ passport.use(new GitHubStrategy({
 },
   function (accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
+      console.log("upsertの前");
       User.upsert({
         userId: profile.id,
         username: profile.username
