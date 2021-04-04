@@ -45,7 +45,8 @@ passport.use(new GitHubStrategy({
       User.upsert({
         userId: profile.id,
         username: profile.username
-      }).then(() => {
+      }).then((bool) => {
+        console.log("test", bool);
         done(null, profile);
       });
     });
