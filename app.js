@@ -42,12 +42,10 @@ passport.use(new GitHubStrategy({
 },
   function (accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      console.log("db_url", process.env.DATABASE_URL);
       User.upsert({
         userId: profile.id,
         username: profile.username
       }).then((bool) => {
-        console.log("test", bool);
         done(null, profile);
       });
     });
