@@ -27,7 +27,7 @@
     "pug": "2.0.0-beta11",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "sequelize": "^4.33.4"
+    "sequelize": "^5.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
